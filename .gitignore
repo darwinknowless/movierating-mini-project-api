@@ -1,0 +1,8 @@
+.DS_Store
+.env.development
+.env.test
+.env.production
+node_modules
+config.json
+public/images/*
+coverage
