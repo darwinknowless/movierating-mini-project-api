@@ -4,7 +4,8 @@
   "description": "Project Team C : Movie Review",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "NODE_ENV=development nodemon index.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,13 @@
   "bugs": {
     "url": "https://gitlab.com/binarxglints_batch11/miniproject/team-c/backendteam/issues"
   },
-  "homepage": "https://gitlab.com/binarxglints_batch11/miniproject/team-c/backendteam#readme"
+  "homepage": "https://gitlab.com/binarxglints_batch11/miniproject/team-c/backendteam#readme",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-fileupload": "^1.2.1",
+    "mongoose": "^5.12.3",
+    "mongoose-delete": "^0.5.3",
+    "validator": "^13.5.2"
+  }
 }
