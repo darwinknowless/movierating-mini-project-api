@@ -1,0 +1,19 @@
+{
+  "name": "backendteam",
+  "version": "1.0.0",
+  "description": "Project Team C : Movie Review",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/binarxglints_batch11/miniproject/team-c/backendteam.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/binarxglints_batch11/miniproject/team-c/backendteam/issues"
+  },
+  "homepage": "https://gitlab.com/binarxglints_batch11/miniproject/team-c/backendteam#readme"
+}
