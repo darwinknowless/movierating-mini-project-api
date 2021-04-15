@@ -10,5 +10,9 @@ const movieController = require("../controllers/movieController");
 // Make router
 const router = express.Router();
 
+router.post("/", movieController.create);
+
+
+
 // Exports router
 module.exports = router;
