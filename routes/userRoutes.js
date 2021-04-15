@@ -15,7 +15,7 @@ const userController = require("../controllers/userController");
 const router = express.Router();
 
 
-router.post("/signup", userValidator.signup, auth.signup, userontroller.getToken);
+router.post("/signup", userValidator.signup, auth.signup, userController.getToken);
 router.post("/signin",userValidator.signin, auth.signin, userController.getToken);
 // Exports router
 module.exports = router;

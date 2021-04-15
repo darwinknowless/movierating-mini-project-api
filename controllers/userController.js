@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 class UserController {
   async getToken(req, res) {
     try {
-      //get the req.user from authRoutes
+      //get the req.user from userRoutes
       // amd create body variable
       const body = {
         id: req.user._id,
