@@ -1,14 +1,23 @@
 const express = require("express");
-
-// Import validator
-
-// Import controller
+// const passport = require("passport");
 const userController = require("../controllers/userController");
-
-// Import auth (middleware)
+const userValidator = require("../middlewares/validators/userValidator");
+const auth = require("../middlewares/auth");
 
 // Make router
 const router = express.Router();
 
+router.post(
+  "/signup",
+  userValidator.signup,
+  auth.signup,
+  userController.getToken
+);
+router.post(
+  "/signin",
+  userValidator.signin,
+  auth.signin,
+  userController.getToken
+);
 // Exports router
 module.exports = router;

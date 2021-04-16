@@ -8,10 +8,10 @@ const MovieSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    genre: [{
-      type: String,
+    genre: {
+      type:[String],
       required: true,
-    }],
+    },
     relaseYear: {
       type: Number,
       required: true,
@@ -20,17 +20,16 @@ const MovieSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    trailer: {
+    urlTrailer: {
       type: String,
       default: null,
       required: false,
     },
-    poster: {
+    urlPoster: {
       type: String,
       default: null,
       required: false,
-      // Getter
-      get: getPoster,
+     
     },
     review: {
       type: mongoose.Schema.ObjectId,
@@ -56,9 +55,6 @@ const MovieSchema = new mongoose.Schema(
   }
 );
 
-function getPoster(poster) {
-  return `/images/${poster}`;
-}
 
 // Enable soft delete
 MovieSchema.plugin(mongooseDelete, { overrideMethods: "all" });
