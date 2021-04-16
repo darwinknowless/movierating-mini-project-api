@@ -7,7 +7,7 @@ const auth =  require("../middlewares/auth");
 // Import validator
 
 // Import controller
-const userController = require("../controllers/userController");
+// const userController = require("../controllers/userController");
 
 // Import auth (middleware)
 
