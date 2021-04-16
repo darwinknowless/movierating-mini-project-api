@@ -1,5 +1,6 @@
 const { user, movie, review, caster } = require("../models");
 const jwt = require("jsonwebtoken");
+const path = require("path");
 
 class UserController {
   async getToken(req, res) {
