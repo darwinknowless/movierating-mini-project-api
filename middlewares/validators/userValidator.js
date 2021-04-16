@@ -26,6 +26,35 @@ exports.signup = async (req, res, next) => {
     });
   }
 
+  //=======================FOR IMAGE UPLOAD==================
+  if ((req, res)) {
+    const file = req.files.image;
+
+    //validator for image
+    if (!file.mimetype.startsWith("image")) {
+      errors.push("Image must less tahn 1MB");
+    }
+
+    //create custom filename
+    let fileName = crypto.randomBytes(16).toString("hex");
+
+    //renaming the file
+    file.name = `${fileName}${path.parse(file.name).ext}`;
+
+    //assign req.body.image with file.name
+    req.body.image = file.name;
+
+    //Upload image to /public/image
+    file.mv(`./public/images/${file.name}`, async (err) => {
+      if (err) {
+        return res.status(500).json({
+          message: "Internal Server Error",
+          error: err,
+        });
+      }
+    });
+  }
+
   next();
 };
 
