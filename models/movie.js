@@ -25,10 +25,12 @@ const MovieSchema = new mongoose.Schema(
       default: null,
       required: false,
     },
-    urlPoster: {
+    poster: {
       type: String,
       default: null,
       required: false,
+      // Getter
+      get: getPoster,
      
     },
     rating: {
@@ -51,10 +53,14 @@ const MovieSchema = new mongoose.Schema(
       createdAt: "createdAt",
       updatedAt: "updatedAt",
     },
-    //toJSON: { getters: true },
+    toJSON: { getters: true },
   }
 );
 
+// Image getter
+function getPoster(poster) {
+  return `/images/moviePoster/${poster}`;
+}
 
 // Enable soft delete
 MovieSchema.plugin(mongooseDelete, { overrideMethods: "all" });

@@ -3,6 +3,7 @@ const express = require("express");
 const userController = require("../controllers/userController");
 const userValidator = require("../middlewares/validators/userValidator");
 const auth = require("../middlewares/auth");
+const uploadUserPhoto = require("../middlewares/upload/userPhotoUpload");
 
 // Make router
 const router = express.Router();
@@ -10,6 +11,7 @@ const router = express.Router();
 router.post(
   "/signup",
   userValidator.signup,
+  uploadUserPhoto.uploadPhoto,
   auth.signup,
   userController.getToken
 );

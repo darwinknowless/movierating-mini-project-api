@@ -5,14 +5,16 @@ const express = require("express");
 // Import controller
 const movieController = require("../controllers/movieController");
 
-// Import auth (middleware)
+// Import upload
+const movieUpload = require("../middlewares/upload/moviePosterUpload");
+
+//Import auth
 
 // Make router
 const router = express.Router();
 
-router.post("/", movieController.create);
-router.get("/", movieController.getAll);
-
+router.post("/", movieUpload.uploadPoster, movieController.create);
+router.get("/",  movieController.getAll);
 
 // Exports router
 module.exports = router;
