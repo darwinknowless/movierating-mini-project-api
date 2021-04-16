@@ -12,7 +12,7 @@ const MovieSchema = new mongoose.Schema(
       type:[String],
       required: true,
     },
-    relaseYear: {
+    releaseYear: {
       type: Number,
       required: true,
     },
@@ -31,13 +31,13 @@ const MovieSchema = new mongoose.Schema(
       required: false,
      
     },
-    review: {
-      type: mongoose.Schema.ObjectId,
-      ref: "review",
+    rating: {
+      type: Number,
+      default: 0,
       required: false,//change soon
     },
     caster: {
-      type: mongoose.Schema.ObjectId,
+      type: [mongoose.Schema.ObjectId],
       ref: "caster",
       required: false,//change soon
     },

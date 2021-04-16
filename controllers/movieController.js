@@ -1,5 +1,5 @@
 const { user, movie, review, caster } = require("../models");
-const mongoosePaginate = require('mongoose-paginate-v2');
+const mongoosePaginate = require("mongoose-paginate-v2");
 
 class MovieController {
   async create(req, res) {
@@ -25,7 +25,7 @@ class MovieController {
     }
   }
 
-  getAll = async (req, res) => {
+  async getAll(req, res) {
     try {
       const getAll = await movie.find().populate("reviews").populate("caster");
       return res.status(200).json({
@@ -38,9 +38,7 @@ class MovieController {
         error: e,
       });
     }
-  };
-
-  
+  }
 }
 
 module.exports = new MovieController();
