@@ -1,4 +1,6 @@
 const validator = require("validator");
+const crypto = require("crypto");
+const path = require("path");
 
 exports.signup = async (req, res, next) => {
   //check req.body.email is email
