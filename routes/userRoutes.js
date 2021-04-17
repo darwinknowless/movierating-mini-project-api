@@ -18,6 +18,7 @@ const router = express.Router();
 router.post("/signup", userValidator.signup, auth.signup, userController.getToken);
 router.post("/signin",userValidator.signin, auth.signin, userController.getToken);
 router.put("/update/", auth.user,userValidator.update, userController.update);
-// router.post("/signin",userValidator.signin, auth.signin, userController.getToken);
-// Exports router
+
+router.get("/", auth.user,  userController.getOne);
+
 module.exports = router;

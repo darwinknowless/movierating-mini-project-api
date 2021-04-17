@@ -33,7 +33,7 @@ class UserController {
   async update(req, res) {
     try {
       // Update data
-      console.log(req.params.id)
+      
       let data = await user.findOneAndUpdate(
         {
           _id: req.user.id,
@@ -59,6 +59,27 @@ class UserController {
       });
     }
   }
+
+  async getOne(req, res) {
+    try {
+      let data = await user.findOne({ 
+        _id: req.user.id 
+      });
+
+      return res.status(200).json({
+        message: "Here is your Profile",
+        data,
+
+        // return res.status(200).send(data.nama);
+      });
+    } catch (e) {
+      return res.status(500).json({
+        message: "Internal Server Error",
+        error: e,
+      });
+    }
+  }
+
 }
 
 module.exports = new UserController();

@@ -138,3 +138,12 @@ exports.update = async (req, res, next) => {
 
   next();
 };
+
+// exports.getOne = (req, res, next) => {
+//   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+//     return res.status(400).json({
+//       message: "parameter not valid!!! must use 24 char $ hexadec",
+//     });
+//   }
+//   next();
+// };
