@@ -1,7 +1,6 @@
 const { user, movie, review, caster } = require("../models");
 const jwt = require("jsonwebtoken");
 
-
 class UserController {
   async getToken(req, res) {
     try {
@@ -34,9 +33,10 @@ class UserController {
   async update(req, res) {
     try {
       // Update data
+      console.log(req.params.id)
       let data = await user.findOneAndUpdate(
         {
-          id: req.user._id,
+          _id: req.user.id,
         },
         req.body, // This is all of req.body
         {
@@ -45,7 +45,7 @@ class UserController {
       );
       // new is to return the updated barang data
       // If no new, it will return the old data before updated
-  
+
       // If success
       console.log(data);
       return res.status(201).json({
@@ -60,7 +60,5 @@ class UserController {
     }
   }
 }
-
-
 
 module.exports = new UserController();
