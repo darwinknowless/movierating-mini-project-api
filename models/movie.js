@@ -20,6 +20,11 @@ const MovieSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    studios: {
+      type:String,
+      default: "Anonymous",
+      required: true,
+    },
     urlTrailer: {
       type: String,
       default: null,
@@ -31,7 +36,6 @@ const MovieSchema = new mongoose.Schema(
       required: false,
       // Getter
       get: getPoster,
-     
     },
     rating: {
       type: Number,

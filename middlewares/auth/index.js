@@ -58,6 +58,7 @@ passport.use(
 
         return done(null, userSignUp, {
           message: "User Created",
+          
         });
       } catch (e) {
         //if create user failed, it will make
