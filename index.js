@@ -77,7 +77,7 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgan("combined", { stream: accessLogStream }));
 }
 
-// Static folder (for images)
+// Static folder (for image)
 app.use(express.static("public"));
 
 // Make routes
@@ -94,4 +94,5 @@ if (process.env.NODE_ENV !== "test") {
   app.listen(PORT, () => console.log(`Server running on ${PORT}!`));
 }
 
+// Export index.js
 module.exports = app;

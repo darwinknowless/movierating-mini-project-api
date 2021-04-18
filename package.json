@@ -4,19 +4,13 @@
   "description": "Project Team C : Movie Review",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "NODE_ENV=development nodemon index.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://gitlab.com/binarxglints_batch11/miniproject/team-c/backendteam.git"
+    "test": "cross-env NODE_ENV=test jest --testTimeout=10000 --coverage --forceExit",
+    "dev": "NODE_ENV=development nodemon index.js",
+    "stop": "NODE_ENV=production forever stop index.js || true",
+    "start": "NODE_ENV=production forever start index.js"
   },
   "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://gitlab.com/binarxglints_batch11/miniproject/team-c/backendteam/issues"
-  },
-  "homepage": "https://gitlab.com/binarxglints_batch11/miniproject/team-c/backendteam#readme",
   "dependencies": {
     "bcrypt": "^5.0.1",
     "cors": "^2.8.5",

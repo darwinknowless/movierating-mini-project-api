@@ -51,7 +51,6 @@ exports.signin = async (req, res, next) => {
   next();
 };
 
-
 exports.update = async (req, res, next) => {
   //check req.body.email is email
 

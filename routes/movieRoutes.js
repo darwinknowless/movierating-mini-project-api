@@ -7,7 +7,11 @@ const movieValidator = require("../middlewares/validators/movieValidator");
 const movieController = require("../controllers/movieController");
 
 // Import upload
+<<<<<<< HEAD
 const movieUpload = require("../middlewares/uploads/uploadFlow");
+=======
+const movieUpload = require("../middlewares/upload/moviePosterUpload");
+>>>>>>> b8dcaea6b0876006db2102815e389a9d3b0637a3
 
 //Import auth
 const auth = require("../middlewares/auth");
