@@ -9,7 +9,7 @@ const MovieSchema = new mongoose.Schema(
       required: true,
     },
     genre: {
-      type:[String],
+      type: [String],
       required: true,
     },
     releaseYear: {
@@ -21,7 +21,7 @@ const MovieSchema = new mongoose.Schema(
       required: true,
     },
     studios: {
-      type:String,
+      type: String,
       default: "Anonymous",
       required: true,
     },
@@ -40,14 +40,20 @@ const MovieSchema = new mongoose.Schema(
     rating: {
       type: Number,
       default: 0,
-      required: false,//change soon
+      required: false, //change soon
     },
-    caster: {
-      type: [mongoose.Schema.ObjectId],
-      ref: "caster",
-      required: false,//change soon
-    },
-
+    reviews: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: "review",
+      },
+    ],
+    casts: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: "caster",
+      },
+    ],
 
     //TODO input your schema header column here
   },

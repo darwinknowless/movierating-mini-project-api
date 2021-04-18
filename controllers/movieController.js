@@ -1,4 +1,5 @@
 const { user, movie, review, caster } = require("../models");
+const mongoose = require("mongoose");
 
 class MovieController {
   async create(req, res) {
@@ -45,11 +46,11 @@ class MovieController {
         .skip((page - 1) * limit)
         .limit(limit);
 
-        if (movies.length === 0) {
-          return res.status(404).json({
-            message: "Movie Not Found",
-          });
-        }
+      if (movies.length === 0) {
+        return res.status(404).json({
+          message: "Movie Not Found",
+        });
+      }
 
       res.status(200).json({
         message: "succes",
@@ -85,9 +86,37 @@ class MovieController {
         message: `Success, Movie ${data.title} is Deleted`,
       });
     } catch (e) {
+      console.error(e);
       return res.status(500).json({
         message: "Internal Server Error",
         error: e,
+      });
+    }
+  }
+
+  async getOne(req, res) {
+    try {
+
+      const dataOne = await movie
+        .findOne({ _id: req.params.id })
+        .populate("reviews")
+        .populate("category")
+        .populate("casts");
+
+        if (dataOne === null) {
+          return res.status(404).json({
+            message: "Data Movie Not Found",
+          });
+        }
+
+      return res.status(200).json({
+        message: "success",
+        result: dataOne,
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: "Internal Server Error",
+        error: error.message,
       });
     }
   }

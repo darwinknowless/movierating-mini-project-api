@@ -25,9 +25,9 @@ const UserSchema = new mongoose.Schema(
       default: "user",
       required: true,
     },
-    image: {
+    profilPhoto: {
       type: String,
-      default: null,
+      default: "urlPhoto",
       required: false,
       //get
       get: getImage,
@@ -45,7 +45,7 @@ const UserSchema = new mongoose.Schema(
 
 //getter function for barang
 function getImage(image) {
-  return `/images/${image}`;
+  return `/images/userPhoto${image}`;
 }
 
 //encrypting the password
