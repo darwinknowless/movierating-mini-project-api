@@ -1,70 +1,207 @@
-const mongoose = require("mongoose"); // Import mongoose
-const mongooseDelete = require("mongoose-delete"); //Package to enable soft delete
-
-// Add Schema
-const ReviewSchema = new mongoose.Schema({
-  title: {
-    type: String,
-    trim: true,
-    required: [true, "Please add title for the review"],
-    maxlength: 100,
-  },
-  description: {
-    type: String,
-    required: [true, "Please add some description"],
-  },
-  rating: {
-    type: Number,
-    min: 1,
-    max: 10,
-    required: [true, "Please add rating between 1 and 10"],
-  },
-  movie: {
-    type: mongoose.Schema.ObjectId,
-    ref: "movie",
-    required: true, // Change Soon
-  },
-  user: {
-    type: mongoose.Schema.ObjectId,
-    ref: "user",
-    required: true, // Change Soon
-  },
-});
-
-// Prevent user for submitting more than one review per movie
-ReviewSchema.index({ movie: 1, user: 1 }, { unique: true });
-
-// Static method to get averaga rating
-ReviewSchema.statics.getAverageRating = async function (movieId) {
-  const obj = await this.aggregate([
-    {
-      $match: { movie: movieId },
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
+// pagination on model
+const mongoosePaginate = require("mongoose-paginate-v2");
+// import model user & movie
+const Movie = require("./movie.js");
+const User = require("./user");
+// Add Review Schema
+const ReviewSchema = new Schema(
+  {
+    title: {
+      type: String,
+      required: true,
     },
-    {
-      $group: {
-        _id: "$movie",
-        averageRating: { $avg: "$rating" },
-      },
+    description: {
+      type: String,
+      required: true,
     },
-  ]);
-
-  try {
-    await this.model("movie").findByIdAndUpdate(movieId, {
-      averageRating: obj[0].averageRating,
-    });
-  } catch (e) {
-    console.error(e);
+    rating: {
+      type: Number,
+      enum: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      required: true,
+    },
+    movieId: {
+      type: Schema.Types.ObjectId,
+      ref: "Movie",
+    },
+    author: {
+      type: Schema.Types.ObjectId,
+      ref: "User", 
+    },
+  },
+  {
+    // versionkey: false,
+    timestamps: true,
   }
-};
+);
 
-// call getAverageCost after save
-ReviewSchema.post("save", function () {
-  this.constructor.getAverageRating(this.movie);
-});
+//pagination here
+ReviewSchema.plugin(mongoosePaginate);
 
-// call getAverageCost after remove
-ReviewSchema.pre("remove", function () {
-  this.constructor.getAverageRating(this.movie);
-});
+class review extends mongoose.model("review", ReviewSchema) {
+  static register(author, movieId, bodyParams) {
+    return new Promise((resolve, reject) => {
+      this.find({ movieId: movieId, author: author })
+        .then((data) => {
+          if (data.length != 0)
+            return reject("You've already created a review for this movie");
+          else {
+            let params = {
+              title: bodyParams.title,
+              description: bodyParams.description,
+              rating: bodyParams.rating,
+              author: author,
+              movieId: movieId,
+            };
 
-module.exports = mongoose.model("review", ReviewSchema); //Export model
+            let pushData;
+            let addRating;
+
+            this.create(params).then((review) => {
+              pushData = review._id;
+              addRating = review.rating;
+
+              User.findById(author).then((user) => {
+                user.reviews.push(pushData);
+                user.save();
+              });
+
+              Movie.findById(movieId).then((movie) => {
+                movie.rating = movie.rating * movie.reviews.length + addRating;
+                movie.reviews.push(pushData);
+                movie.rating = movie.rating / movie.reviews.length;
+                movie.save();
+              });
+
+              resolve(review);
+            });
+          }
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
+  }
+
+  static myReview(author, pagination, page) {
+    return new Promise((resolve) => {
+      let options = {
+        page: page,
+        limit: 10,
+        pagination: JSON.parse(pagination),
+        sort: "-updatedAt",
+        populate: [
+          {
+            path: "movieId",
+            select: ["title"],
+          },
+          {
+            path: "author",
+            select: ["fullname"],
+          },
+        ],
+        collation: { locale: "en" },
+      };
+
+      this.find({ author: author }).then((data) => {
+        let lastPage = Math.floor(data.length / 10) + 1;
+        if (options.page > lastPage || options.page < 0) options.page = 1;
+
+        this.paginate({}, options).then((data) => {
+          resolve(data);
+        });
+      });
+    });
+  }
+
+  static movieReview(movieId, pagination, page) {
+    return new Promise((resolve, reject) => {
+      let options = {
+        page: page,
+        limit: 10,
+        pagination: JSON.parse(pagination),
+        sort: "-updatedAt",
+        populate: [
+          {
+            path: "movieId",
+            select: ["title"],
+          },
+          {
+            path: "author",
+            select: ["fullname"],
+          },
+        ],
+        collation: { locale: "en" },
+      };
+
+      this.find({ movieId: movieId })
+        .then((data) => {
+          let lastPage = Math.floor(data.length / 10) + 1;
+          if (options.page > lastPage || options.page < 0) options.page = 1;
+
+          this.paginate({}, options).then((data) => {
+            resolve(data);
+          });
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
+  }
+
+  static editReview(author, reviewId, bodyParams) {
+    return new Promise((resolve, reject) => {
+      let params = {
+        title: bodyParams.title,
+        description: bodyParams.description,
+        rating: bodyParams.rating,
+      };
+      for (let prop in params) if (!params[prop]) delete params[prop];
+
+      this.findOneAndUpdate({ author: author, _id: reviewId }, params)
+        .then((data) => {
+          Movie.findById(data.movieId).then((movie) => {
+            movie.rating = movie.rating * movie.reviews.length - data.rating;
+            movie.rating = movie.rating + params.rating;
+            movie.rating = movie.rating / movie.reviews.length;
+            movie.save();
+          });
+          resolve(data);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
+  }
+
+  static destroy(author, reviewId) {
+    return new Promise((resolve, reject) => {
+      let subRating;
+
+      this.findOneAndDelete({ author: author, _id: reviewId })
+        .then((data) => {
+          subRating = data.rating;
+          User.findById(data.author).then((user) => {
+            user.reviews.splice(user.reviews.indexOf(data._id), 1);
+            user.save();
+          });
+
+          Movie.findById(data.movieId).then((movie) => {
+            movie.rating = movie.rating * movie.reviews.length - subRating;
+            movie.reviews.splice(movie.reviews.indexOf(data._id), 1);
+            if (movie.reviews.length == 0) movie.rating = 0;
+            else movie.rating = movie.rating / movie.reviews.length;
+            movie.save();
+          });
+
+          resolve(data);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
+  }
+}
+
+module.exports = review;
