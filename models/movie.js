@@ -8,10 +8,6 @@ const MovieSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    genre: {
-      type: [String],
-      required: true,
-    },
     releaseYear: {
       type: Number,
       required: true,
@@ -37,11 +33,17 @@ const MovieSchema = new mongoose.Schema(
       // Getter
       get: getPoster,
     },
-    rating: {
+    ratingAvg: {
       type: Number,
       default: 0,
       required: false, //change soon
     },
+    categorys: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: "category",
+      },
+    ],
     reviews: [
       {
         type: mongoose.Schema.ObjectId,

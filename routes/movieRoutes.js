@@ -16,17 +16,25 @@ const auth = require("../middlewares/auth");
 const router = express.Router();
 
 router.post("/", auth.admin, movieUpload.uploadPoster, movieController.create);
+
 router.delete(
   "/:id",
   auth.admin,
   movieValidator.cekParamsId,
   movieController.deleteMovie
 );
-router.get("/:id", auth.user, movieValidator.cekParamsId,movieController.getOne )
+router.get("/detail/:id", movieValidator.cekParamsId, movieController.getOne);
+
+router.get("/search/:title", movieController.getMoviebyTitle);
+
+router.get("/category/:category", movieValidator.cekParamsCategory, movieController.getMoviebyCategory);
+router.get("/category/:category/:page",movieValidator.cekParamsCategory, movieController.getMoviebyCategory );
+
 router.get("/", movieController.getAll);
 router.get("/:page", movieController.getAll);
-router.get("/:title", movieController.getAll);
-router.get("/:genre", movieController.getAll);
+
+router.put("/update/:id", auth.admin, movieUpload.uploadPoster, movieController.updateMovie);
+
 
 
 // Exports router

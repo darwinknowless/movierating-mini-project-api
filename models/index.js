@@ -18,6 +18,6 @@ const caster = require("./caster");
 const movie = require("./movie");
 const review = require("./review");
 const user = require("./user"); // Import Auth
-
+const category = require("./category")
 // Export models
-module.exports = { caster, movie, review, user };
+module.exports = { caster, movie, review, user , category};
