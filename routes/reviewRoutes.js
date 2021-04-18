@@ -1,6 +1,7 @@
 const express = require("express");
 
 // Import validator
+const reviewValidator = require("../middlewares/validators/reviewValidator")
 
 // Import controller
 const reviewController = require("../controllers/reviewController");
@@ -10,11 +11,13 @@ const reviewController = require("../controllers/reviewController");
 // Make router
 const router = express.Router();
 
-router.post("/", reviewController.add);
-router.get("/:id", reviewController.mine);
-router.get("/", reviewController.reviews);
-router.put("/:id", reviewController.edit);
-router.delete("/:id", reviewController.delete);
+// TODO POST
+router.post("/", reviewValidator.addReview, reviewController.addReview); // ==> add auth soon
+router.get("/:userId", reviewValidator.userReviews, reviewController.userReviews);
+router.get("/:reviewId", reviewValidator.singleReview, reviewController.singleReview);
+router.get("/", reviewValidator.allReviews, reviewController.allReviews);
+router.put("/reviewId", reviewValidator.editReview, reviewController.editReview); // ==> add auth soon
+router.delete("/reviewId", reviewValidator.deleteReview, reviewController.deleteReview); // ==> add auth soon
 
 // Exports router
 module.exports = router;

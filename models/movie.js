@@ -66,4 +66,4 @@ function getPoster(poster) {
 // Enable soft delete
 MovieSchema.plugin(mongooseDelete, { overrideMethods: "all" });
 
-module.exports = mongoose.model("movie", MovieSchema); //Export model
+module.exports = mongoose.model("Movie", MovieSchema); //Export model
