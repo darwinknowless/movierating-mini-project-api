@@ -1,11 +1,11 @@
-const { user, movie, review, caster } = require("../models");
+const { user, movie, review, cast } = require("../models");
 
 class MovieController {
   async create(req, res) {
     try {
       // Create
       let data = await movie.create(req.body);
-
+      let newcast = await cast.updateOne({_id: req.body.casts}, {$push: {filmography: data._id}}, { new: true })
       // If success
       return res.status(201).json({
         message: "Success",
@@ -24,7 +24,7 @@ class MovieController {
     try {
       const update = await movie.updateOne(
         { _id: req.params.id },
-        { ...req.body, $push: { casts: req.body.castId } },
+        { $push: { casts: req.body.casts } },
         { new: true }
       );
 
@@ -48,6 +48,7 @@ class MovieController {
 
       const dataMovie = await movie
         .find({})
+        .populate("cast")
         .select("title releaseYear ratingAvg poster")
         .sort({ createdAt: -1 })
         .skip((page - 1) * limit)
@@ -149,7 +150,7 @@ class MovieController {
     try {
       const dataOne = await movie
         .findOne({ _id: req.params.id })
-        .populate("reviews")
+        //.populate("reviews")
         //.populate("categorys")
         .populate("casts");
 

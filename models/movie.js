@@ -38,19 +38,18 @@ const MovieSchema = new mongoose.Schema(
       default: 0,
       required: false, //change soon
     },
-    category: 
+    category: {
+      type: [String],
+      default: ["Unknow"],
+      require: true,
+    },
+
+    casts: [
       {
-        type: [String],
-        default: ['Unknow'],
-        require: true
+        type: mongoose.Schema.ObjectId,
+        ref: "cast",
       },
-    
-    casts: 
-      {
-        type:[mongoose.Schema.Types.ObjectId],
-        ref: "caster",
-      },
-    
+    ],
 
     //TODO input your schema header column here
   },
