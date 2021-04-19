@@ -105,6 +105,7 @@ class UserController {
     }
   }
 
+  //delete user
   async delete(req, res) {
     try {
       // delete data
