@@ -14,6 +14,7 @@ exports.getOne = (req, res, next) => {
 
     next();
   } catch (err) {
+    console.log(err);
     return res.status(500).json({
       message: "Internal server error",
       error: err.message,
@@ -74,6 +75,7 @@ exports.create = async (req, res, next) => {
 
     next();
   } catch (err) {
+    console.log(err);
     return res.status(500).json({
       message: "Intenal Server Error",
       error: err.message,
@@ -147,6 +149,7 @@ exports.update = async (req, res, next) => {
 
     next();
   } catch (err) {
+    console.log(err);
     return res.status(500).json({
       message: "Intenal Server Error",
       error: err.message,
@@ -170,22 +173,22 @@ exports.delete = async (req, res, next) => {
 
     // if review not found
     if (!data) {
-        errors.push("Transaksi not found");
+      errors.push("Transaksi not found");
     }
 
     // if errors present, collate here
     if (errors.length > 0) {
-        return res.status(400).json({
-            message: errors.join(", "),
-        });
+      return res.status(400).json({
+        message: errors.join(", "),
+      });
     }
 
     next();
-
   } catch (err) {
-      return res.status(500).json({
-          message: "Internal server error",
-          error: err.message,
-      });
+    console.log(err);
+    return res.status(500).json({
+      message: "Internal server error",
+      error: err.message,
+    });
   }
 };

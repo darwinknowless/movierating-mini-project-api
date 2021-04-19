@@ -47,7 +47,7 @@ ReviewSchema.statics.getAverageRating = async function (movieId) {
     {
       /*fix this */
       $group: {
-        _id: "$movie",
+        _id: "$movieId",
         averageRating: { $avg: "$rating" },
       },
     },
