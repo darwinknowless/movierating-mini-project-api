@@ -5,7 +5,11 @@ class MovieController {
     try {
       // Create
       let data = await movie.create(req.body);
-      let newcast = await cast.updateOne({_id: req.body.casts}, {$push: {filmography: data._id}}, { new: true })
+      let newcast = await cast.updateOne(
+        { _id: req.body.casts },
+        { $push: { filmography: data._id } },
+        { new: true }
+      );
       // If success
       return res.status(201).json({
         message: "Success",
@@ -20,13 +24,31 @@ class MovieController {
     }
   }
 
-  async updateMovie(req, res) {
+  async updateMovieCast(req, res) {
     try {
-      const update = await movie.updateOne(
+      const updatecast = await movie.updateOne(
         { _id: req.params.id },
         { $push: { casts: req.body.casts } },
         { new: true }
       );
+
+      return res.status(200).json({
+        message: "Success Update",
+        data: updatecast,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "Internal Server Error",
+        error: error.message,
+      });
+    }
+  }
+
+  async updateMovie(req, res) {
+    try {
+      const update = await movie.updateOne({ _id: req.params.id }, req.body, {
+        new: true,
+      });
 
       return res.status(200).json({
         message: "Success Update",
@@ -39,7 +61,6 @@ class MovieController {
       });
     }
   }
-
   async getAll(req, res) {
     try {
       const page = parseInt(req.params.page) || 1; //for next page pass 1 here
@@ -81,8 +102,8 @@ class MovieController {
 
   async getMoviebyCategory(req, res) {
     try {
-      const page =  parseInt(req.params.page) || 1; //for next page pass 1 here
-      const limit =  10;
+      const page = parseInt(req.params.page) || 1; //for next page pass 1 here
+      const limit = 10;
       let total = await movie
         .find({ category: req.params.category })
         .countDocuments();
