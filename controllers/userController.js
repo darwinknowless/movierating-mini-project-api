@@ -33,7 +33,7 @@ class UserController {
   async update(req, res) {
     try {
       // Update data
-      
+
       let data = await user.findOneAndUpdate(
         {
           _id: req.user.id,
@@ -59,11 +59,36 @@ class UserController {
       });
     }
   }
+  //get All user
+  async getAll(req, res) {
+    try {
+      let data = await user.find();
 
+      //if no data
+      if (!data.length) {
+        return res.status(404).json({
+          message: "User not found",
+        });
+      }
+
+      //if success
+      return res.status(200).json({
+        message: "success",
+        data,
+      });
+    } catch (e) {
+      return res.status(500).json({
+        message: "internal server error",
+        error: e,
+      });
+    }
+  }
+
+  //Delete User
   async getOne(req, res) {
     try {
-      let data = await user.findOne({ 
-        _id: req.user.id 
+      let data = await user.findOne({
+        _id: req.user.id,
       });
 
       return res.status(200).json({
@@ -80,6 +105,21 @@ class UserController {
     }
   }
 
+  async delete(req, res) {
+    try {
+      // delete data
+      await user.delete({ _id: req.user.id });
+
+      return res.status(200).json({
+        message: "Success",
+      });
+    } catch (e) {
+      return res.status(500).json({
+        message: "Internal Server Error",
+        error: e,
+      });
+    }
+  }
 }
 
 module.exports = new UserController();
