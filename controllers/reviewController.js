@@ -1,71 +1,157 @@
-const { review, movie, user, caster } = require("../models");
-const { success, error } = require("../helpers/response");
+const Review = require("../models/review");
+const Movie = require("../models/movie");
 
 class ReviewController {
-  // Add Review
-  async add(req, res) {
+  //TODO Create Review
+  async create(req, res) {
     try {
-      let result = await review.register(
-        req.user,
-        req.query.movieId,
-        req.body
-      );
-      success(res, result, 201);
-    } catch (err) {
-      console.log(err);
-      error(res, err, 422);
+      req.body.movie = req.params.movieId;
+      req.body.user = req.user.id;
+
+      const movie = await Movie.findById(req.params.movieId);
+      if (!movie) {
+        return res.status(404).json({
+          message: `No movie with ${req.params.movieId}`,
+        });
+      }
+      // create data
+      const review = await Review.create(req.body);
+      // if successful
+      return res.status(201).json({
+        message: "Success",
+        data: review,
+      });
+    } catch (e) {
+      console.log(e);
+      return res.status(500).json({
+        message: "Internal server error",
+        error: err.message,
+      });
     }
   }
-
-  // Show User review only
-  async mine(req, res) {
+  //TODO Get User Review
+  async getUser(req, res) {
     try {
-      let result = await review.myReview(
-        req.user._id,
-        req.query.pagination || true,
-        req.query.page || 1
-      );
-      success(res, result, 200);
-    } catch (err) {
-      error(res, err, 422);
+    } catch (e) {
+      console.log(e);
     }
   }
-
-  // Show All
-  async reviews(req, res) {
+  //TODO Get All Reviews
+  async getAll(req, res) {
     try {
-      let result = await review.movieReview(
-        req.query.movieId,
-        req.query.pagination || true,
-        req.query.page || 1
-      );
-      success(res, result, 200);
-    } catch (err) {
-      error(res, err, 422);
+      req.body.movie = req.params.movieId;
+      // Find all data
+      const reviews = await Review.find({ movie: req.params.movieId });
+      // If no data
+      if (reviews.length === 0) {
+        return res.status(404).json({
+          message: "No reviews found",
+        });
+      }
+      // If successful
+      return res.status(200).json({
+        message: "Success",
+        count: reviews.length,
+        data: reviews,
+      });
+    } catch (e) {
+      console.log(e);
+      return res.status(500).json({
+        message: "Internal Server Error",
+        error: err.message,
+      });
     }
   }
-
-  // Edit
-  async edit(req, res) {
+  //TODO One Review
+  async getOne(req, res) {
     try {
-      let result = await review.editReview(
-        req.user._id,
-        req.query.reviewId,
-        req.body
-      );
-      success(res, result, 201);
-    } catch (err) {
-      error(res, err, 422);
+      const review = await Review.findById(req.params.id).populate({
+        path: "Movie",
+        select: "name title",
+      });
+      // If no review
+      if (!review) {
+        return res.status(404).json({
+          message: `No review found with the id of ${req.params.id}`,
+        });
+      }
+      // If successful
+      return res.status(200).json({
+        message: "Success",
+        data,
+      });
+    } catch (e) {
+      return res.status(500).json({
+        message: "Internal Server Error",
+        error: err.message,
+      });
+    }
+  } // end of Get One
+
+  //TODO Update Review
+  async update(req, res) {
+    try {
+      let review = await Review.findById(req.params.id);
+      // If no review
+      if (!review) {
+        return res.status(404).json({
+          message: `No review with ${req.params.id}`,
+        });
+      }
+      // Make sure belongs to user or user is admin
+      if (review.user.toString() !== req.user.id && req.user.role !== "user") {
+        return res.status(401).json({
+          message: `Not authorized to update review`,
+        });
+      }
+      review = await Review.findByIdAndUpdate(req.params.id, req.body, {
+        new: true,
+        runValidators: true,
+      });
+      // If successful
+      return res.status(201).json({
+        message: "Success",
+        data: review,
+      });
+    } catch (e) {
+      console.log(e);
+      return res.status(500).json({
+        message: "Internal Server Error",
+        error: err.message,
+      });
     }
   }
-
-  // Delete
+  //TODO Delete Review
   async delete(req, res) {
     try {
-      let result = await review.destroy(req.user._id, req.query.reviewId);
-      success(res, result, 200);
-    } catch (err) {
-      error(res, err, 422);
+      let review = await Review.findById(req.params.id);
+      // If no review
+      if (!review) {
+        return res.status(404).json({
+          message: `No review with ${req.params.id}`,
+        });
+      }
+      // Make sure belongs to user or user is admin
+      if (review.user.toString() !== req.user.id && req.user.role !== "user") {
+        return res.status(401).json({
+          message: `Not authorized to delete review`,
+        });
+      }
+
+      await review.remove();
+
+      // If successful
+      return res.status(201).json({
+        message: "Success",
+        data: review,
+      });
+      // If Failed
+    } catch (e) {
+      console.log(e);
+      return res.status(500).json({
+        message: "Internal Server Error",
+        error: e,
+      });
     }
   }
 }

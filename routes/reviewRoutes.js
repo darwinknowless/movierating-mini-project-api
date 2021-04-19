@@ -1,20 +1,17 @@
 const express = require("express");
-
-// Import validator
-
-// Import controller
-const reviewController = require("../controllers/reviewController");
-
-// Import auth (middleware)
-
-// Make router
 const router = express.Router();
 
-router.post("/", reviewController.add);
-router.get("/:id", reviewController.mine);
-router.get("/", reviewController.reviews);
-router.put("/:id", reviewController.edit);
-router.delete("/:id", reviewController.delete);
+// Import controller, validator & auth
+const reviewValidator = require("../middlewares/validators/reviewValidator")
+const reviewController = require("../controllers/reviewController");
+const auth = require("../middlewares/auth");
+
+// TODO POST
+router.get("/", reviewController.getAll);
+router.post("/", reviewValidator.create, reviewController.create); // ==> add auth soon
+router.get("/:id", reviewValidator.getOne, reviewController.getOne);
+router.put("/:id", reviewValidator.update, reviewController.update); // ==> add auth soon
+router.delete("/:id", reviewValidator.delete, reviewController.delete); // ==> add auth soon
 
 // Exports router
 module.exports = router;

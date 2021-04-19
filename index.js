@@ -8,7 +8,6 @@ const path = require("path");
 const express = require("express");
 const fileUpload = require("express-fileupload"); // Import express-fileupload
 
-
 const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean");
 const rateLimit = require("express-rate-limit");
@@ -38,7 +37,6 @@ app.use(
 app.use(fileUpload());
 // Sanitize data
 app.use(mongoSanitize());
-
 // Prevent XSS attact
 app.use(xss());
 

@@ -1,15 +1,11 @@
-const { user, movie, review, cast } = require("../models");
+const { user, movie, review, caster } = require("../models");
 
 class MovieController {
   async create(req, res) {
     try {
       // Create
       let data = await movie.create(req.body);
-      let newcast = await cast.updateOne(
-        { _id: req.body.casts },
-        { $push: { filmography: data._id } },
-        { new: true }
-      );
+
       // If success
       return res.status(201).json({
         message: "Success",
@@ -24,31 +20,13 @@ class MovieController {
     }
   }
 
-  async updateMovieCast(req, res) {
-    try {
-      const updatecast = await movie.updateOne(
-        { _id: req.params.id },
-        { $push: { casts: req.body.casts } },
-        { new: true }
-      );
-
-      return res.status(200).json({
-        message: "Success Update",
-        data: updatecast,
-      });
-    } catch (error) {
-      return res.status(500).json({
-        message: "Internal Server Error",
-        error: error.message,
-      });
-    }
-  }
-
   async updateMovie(req, res) {
     try {
-      const update = await movie.updateOne({ _id: req.params.id }, req.body, {
-        new: true,
-      });
+      const update = await movie.updateOne(
+        { _id: req.params.id },
+        { ...req.body, $push: { casts: req.body.castId } },
+        { new: true }
+      );
 
       return res.status(200).json({
         message: "Success Update",
@@ -61,6 +39,7 @@ class MovieController {
       });
     }
   }
+
   async getAll(req, res) {
     try {
       const page = parseInt(req.params.page) || 1; //for next page pass 1 here
@@ -102,8 +81,8 @@ class MovieController {
 
   async getMoviebyCategory(req, res) {
     try {
-      const page = parseInt(req.params.page) || 1; //for next page pass 1 here
-      const limit = 10;
+      const page =  parseInt(req.params.page) || 1; //for next page pass 1 here
+      const limit =  10;
       let total = await movie
         .find({ category: req.params.category })
         .countDocuments();

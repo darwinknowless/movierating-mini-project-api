@@ -56,4 +56,4 @@ function  encryptPassword(password){
 // Enable soft delete
 UserSchema.plugin(mongooseDelete, { overrideMethods: "all" });
 
-module.exports = mongoose.model("user", UserSchema); //Export model
+module.exports = mongoose.model("User", UserSchema); //Export model
