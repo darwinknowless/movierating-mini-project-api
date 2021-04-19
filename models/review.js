@@ -1,113 +1,9 @@
 const mongoose = require("mongoose");
+const mongooseDelete = require("mongoose-delete"); // Import mongoose-delete
 const Schema = mongoose.Schema;
 
-const calcReview = async (review) => {
-  const movieId = mongoose.Types.ObjectId(review.movie);
-  const [aggResult] = await mongoose.model("Review").aggregate([
-    { $match: { movie: { $in: [movieId] } } },
-    {
-      $group: {
-        _id: `$movie`,
-        totalRating: { $sum: `$rating` },
-        totalCount: { $sum: 1 },
-        10: {
-          $sum: {
-            $cond: [{ $eq: [`$rating`, 10] }, 1, 0],
-          },
-        },
-        9: {
-          $sum: {
-            $cond: [{ $eq: [`$rating`, 9] }, 1, 0],
-          },
-        },
-        8: {
-          $sum: {
-            $cond: [{ $eq: [`$rating`, 8] }, 1, 0],
-          },
-        },
-        7: {
-          $sum: {
-            $cond: [{ $eq: [`$rating`, 7] }, 1, 0],
-          },
-        },
-        6: {
-          $sum: {
-            $cond: [{ $eq: [`$rating`, 6] }, 1, 0],
-          },
-        },
-        5: {
-          $sum: {
-            $cond: [{ $eq: [`$rating`, 5] }, 1, 0],
-          },
-        },
-        4: {
-          $sum: {
-            $cond: [{ $eq: [`$rating`, 4] }, 1, 0],
-          },
-        },
-        3: {
-          $sum: {
-            $cond: [{ $eq: [`$rating`, 3] }, 1, 0],
-          },
-        },
-        2: {
-          $sum: {
-            $cond: [{ $eq: [`$rating`, 2] }, 1, 0],
-          },
-        },
-        1: {
-          $sum: {
-            $cond: [{ $eq: [`$rating`, 1] }, 1, 0],
-          },
-        },
-      },
-    },
-    {
-      $project: {
-        _id: 1,
-        averageRating: { $divide: [`$totalRating`, `$totalCount`] },
-        ratings: {
-          1: `$1`,
-          2: `$2`,
-          3: `$3`,
-          4: `$4`,
-          5: `$5`,
-          6: `$6`,
-          7: `$7`,
-          8: `$8`,
-          9: `$9`,
-          10: `$10`,
-        },
-      },
-    },
-  ]);
-
-  const movie = await mongoose.model(`Movie`).findOne({ _id: review.movie });
-
-  if (!aggResult) {
-    movie.averageRating = 0;
-    movie.ratings = {
-      1: 0,
-      2: 0,
-      3: 0,
-      4: 0,
-      5: 0,
-      6: 0,
-      7: 0,
-      8: 0,
-      9: 0,
-      10: 0,
-    };
-  } else {
-    movie.averageRating = parseFloat(aggResult.averageRating.toFixed(2));
-    movie.ratings = aggResult.ratings;
-  }
-
-  await movie.save();
-};
-
 // Review Schema
-const reviewSchema = new Schema(
+const ReviewSchema = new Schema(
   {
     review: {
       type: String,
@@ -117,48 +13,66 @@ const reviewSchema = new Schema(
       type: Number,
       required: true,
       min: 1,
-      max: 10,
-      get: (v) => Math.round(v),
-      set: (v) => Math.round(v),
+      max: 5,
+      required: [true, "Please rate between 1 and 5"],
     },
-    movie: {
+    movieId: {
       type: Schema.Types.ObjectId,
-      ref: "Movie",
+      ref: "movie",
       required: true,
     },
-    reviewer: {
+    userId: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: "user",
       required: true,
     },
   },
-  { timestamps: true }
+  {
+    timestamps: {
+      createdAt: "createdAt",
+      updatedAt: "updatedAt",
+    },
+  }
 );
 
-reviewSchema.pre("save", { document: true }, function (next) {
-  this.isRatingUpdated = false;
-  if (this.isModified("rating")) {
-    this.isRatingUpdated = true;
-    return next();
+// only permits user to submit one review per movie
+ReviewSchema.index({ movie: 1, user: 1 }, { unique: true });
+
+// Static method to get average rating
+ReviewSchema.statics.getAverageRating = async function (movieId) {
+  const obj = await this.aggregate([
+    {
+      $match: { movie: movieId },
+    },
+    {
+      /*fix this */
+      $group: {
+        _id: "$movie",
+        averageRating: { $avg: "$rating" },
+      },
+    },
+  ]);
+
+  try {
+    await this.model("Movie").findByIdAndUpdate(movieId, {
+      averageRating: obj[0].averageRating,
+    });
+  } catch (err) {
+    console.error(err);
   }
-  return next();
+};
+
+// call getAverageRating after posting review
+ReviewSchema.post("save", function () {
+  this.constructor.getAverageRating(this.movie);
 });
 
-reviewSchema.post("save", function () {
-  if (!this.isRatingUpdated) {
-    return;
-  }
-
-  calculateReview(this);
+// call getAverageRating after deleting review
+ReviewSchema.pre("remove", function () {
+  this.constructor.getAverageRating(this.movie);
 });
 
-// reviewSchema.pre('deleteOne', { document: true }, function() {
+// enable soft delete
+ReviewSchema.plugin(mongooseDelete, { overrideMethods: "all" });
 
-//     calculateReview(this);
-// });
-
-reviewSchema.post("deleteOne", { document: true }, function () {
-  calculateReview(this);
-});
-
-module.exports = mongoose.model("Review", reviewSchema); //Export model
+module.exports = mongoose.model("review", ReviewSchema); //Export model
