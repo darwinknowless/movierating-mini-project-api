@@ -3,6 +3,9 @@ const express = require("express");
 // Import validator
 const castValidator = require("../middlewares/validators/castValidator");
 
+//import uploadflow
+const uploadCastPhoto = require("../middlewares/uploads/uploadFlow")
+
 // Import controller
 const castController = require("../controllers/castControllers");
 
@@ -16,7 +19,7 @@ router.get("/", castController.getAll);
 router.get("/:id",  castController.getOne);
 
 // Create transaksi
-router.post("/", castController.create);
+router.post("/", uploadCastPhoto.uploadCastPhoto, castController.create);
 
 // Update transaksi
 router.put("/:id", castController.update);
