@@ -5,15 +5,15 @@ class ReviewController {
   //TODO Create Review
   async create(req, res) {
     try {
-      req.body.movie = req.params.movieId;
-      req.body.user = req.user.id;
+      // req.body.movie = req.params.movieId;
+      // req.body.user = req.user.id;
 
-      const movie = await Movie.findById(req.params.movieId);
-      if (!movie) {
-        return res.status(404).json({
-          message: `No movie with ${req.params.movieId}`,
-        });
-      }
+      // const movie = await Movie.findById(req.params.movieId);
+      // if (!movie) {
+      //   return res.status(404).json({
+      //     message: `No movie with ${req.params.movieId}`,
+      //   });
+      // }
       // create data
       const review = await Review.create(req.body);
       // if successful
