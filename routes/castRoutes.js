@@ -13,7 +13,7 @@ const router = express.Router();
 router.get("/", castController.getAll);
 
 // Get one transaksi
-router.get("/:id", castValidator.getOne, castController.getOne);
+router.get("/:id",  castController.getOne);
 
 // Create transaksi
 router.post("/", castController.create);
