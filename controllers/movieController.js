@@ -5,7 +5,7 @@ class MovieController {
     try {
       // Create
       let data = await movie.create(req.body);
-      let newcast = await cast.updateOne(
+      let newcast = await cast.updateMany(
         { _id: req.body.casts },
         { $push: { filmography: data._id } },
         { new: true }
@@ -26,7 +26,7 @@ class MovieController {
 
   async updateMovieCast(req, res) {
     try {
-      const updatecast = await movie.updateOne(
+      const updatecast = await movie.updateMany(
         { _id: req.params.id },
         { $push: { casts: req.body.casts } },
         { new: true }
@@ -143,10 +143,10 @@ class MovieController {
 
   async getMoviebyTitle(req, res) {
     try {
-      const title = req.params.title;
+      const search = req.query.search;
 
       const dataSearch = await movie
-        .find({ title: { $regex: title, $options: "i" } })
+        .find({ title: { $regex: search, $options: "i" } })
         .limit(10);
 
       if (dataSearch.length === 0) {
