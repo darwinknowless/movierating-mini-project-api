@@ -33,10 +33,17 @@ const MovieSchema = new mongoose.Schema(
       // Getter
       get: getPoster,
     },
-    ratingAvg: {
+    // required False, get rating from review model
+    averageRating: {
       type: Number,
       default: 0,
-      required: false, //change soon
+      min: 0,
+      max: 5,
+    },
+    // Number of review count
+    nRating: {
+      type: Number,
+      default: 0,
     },
     category: {
       type: [String],
