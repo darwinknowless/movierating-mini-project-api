@@ -1,6 +1,7 @@
 require("dotenv").config({
   path: `.env.${process.env.NODE_ENV}`,
 });
+
 // Express
 const fs = require("fs");
 const path = require("path");
@@ -18,11 +19,10 @@ const morgan = require("morgan");
 // Import Router
 const reviewRoutes = require("./routes/reviewRoutes");
 const movieRoutes = require("./routes/movieRoutes");
-const casterRoutes = require("./routes/casterRoutes");
+const castRoutes = require("./routes/castRoutes");
 const userRoutes = require("./routes/userRoutes");
-const categoryRoutes = require("./routes/categoryRoutes");
-
-// Make app
+//const categoryRoutes = require("./routes/categoryRoutes");
+// Make App
 const app = express();
 
 // Body parser
@@ -81,9 +81,9 @@ app.use(express.static("public"));
 // Make routes
 app.use("/review", reviewRoutes);
 app.use("/movie", movieRoutes);
-app.use("/caster", casterRoutes);
+app.use("/cast", castRoutes);
 app.use("/user", userRoutes);
-app.use("/category", categoryRoutes);
+//app.use("/category", categoryRoutes);
 
 // If environment is not test
 if (process.env.NODE_ENV !== "test") {

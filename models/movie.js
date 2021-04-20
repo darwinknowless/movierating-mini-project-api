@@ -8,10 +8,6 @@ const MovieSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    genre: {
-      type:[String],
-      required: true,
-    },
     releaseYear: {
       type: Number,
       required: true,
@@ -21,7 +17,7 @@ const MovieSchema = new mongoose.Schema(
       required: true,
     },
     studios: {
-      type:String,
+      type: String,
       default: "Anonymous",
       required: true,
     },
@@ -37,16 +33,25 @@ const MovieSchema = new mongoose.Schema(
       // Getter
       get: getPoster,
     },
-    rating: {
+    ratingAvg: {
       type: Number,
       default: 0,
-      required: true,//change soon
+      required: false, //change soon
     },
-    caster: {
-      type: [mongoose.Schema.ObjectId],
-      ref: "caster",
-      required: false,//change soon
+    category: {
+      type: [String],
+      default: ["Unknow"],
+      require: true,
     },
+
+    casts: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: "cast",
+      },
+    ],
+
+    //TODO input your schema header column here
   },
   {
     // Enable timestamps

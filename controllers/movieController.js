@@ -1,13 +1,15 @@
-const { user, movie, review, caster } = require("../models");
-
-
+const { user, movie, review, cast } = require("../models");
 
 class MovieController {
   async create(req, res) {
     try {
       // Create
       let data = await movie.create(req.body);
-
+      let newcast = await cast.updateMany(
+        { _id: req.body.casts },
+        { $push: { filmography: data._id } },
+        { new: true }
+      );
       // If success
       return res.status(201).json({
         message: "Success",
@@ -22,37 +24,53 @@ class MovieController {
     }
   }
 
-   async updateMovie  (req, res){
+  async updateMovieCast(req, res) {
     try {
-      
-      const update = await movie.updateOne(
+      const updatecast = await movie.updateMany(
         { _id: req.params.id },
-        { ...req.body, $push: { casts: req.body.castId } },
+        { $push: { casts: req.body.casts } },
         { new: true }
       );
 
       return res.status(200).json({
         message: "Success Update",
-        data: update,
+        data: updatecast,
       });
-      
     } catch (error) {
       return res.status(500).json({
         message: "Internal Server Error",
         error: error.message,
       });
     }
-  };
+  }
 
+  async updateMovie(req, res) {
+    try {
+      const update = await movie.updateOne({ _id: req.params.id }, req.body, {
+        new: true,
+      });
+
+      return res.status(200).json({
+        message: "Success Update",
+        data: update,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: "Internal Server Error",
+        error: error.message,
+      });
+    }
+  }
   async getAll(req, res) {
     try {
       const page = parseInt(req.params.page) || 1; //for next page pass 1 here
-      const limit = parseInt(req.params.limit) || 10;
-      let totalItems = await movie.find().countDocuments();
+      const limit = parseInt(req.query.limit) || 10;
+      let totalItems = await movie.find({}).countDocuments();
 
       const dataMovie = await movie
-        .find()
-        .select('title releaseYear ratingAvg')
+        .find({})
+        .populate("cast")
+        .select("title releaseYear ratingAvg poster")
         .sort({ createdAt: -1 })
         .skip((page - 1) * limit)
         .limit(limit);
@@ -85,7 +103,7 @@ class MovieController {
   async getMoviebyCategory(req, res) {
     try {
       const page = parseInt(req.params.page) || 1; //for next page pass 1 here
-      const limit = parseInt(req.params.limit) || 10;
+      const limit = 10;
       let total = await movie
         .find({ category: req.params.category })
         .countDocuments();
@@ -99,7 +117,7 @@ class MovieController {
         .skip(skip)
         .limit(limit);
 
-      if (dataMoviebyCategory === null) {
+      if (dataMoviebyCategory.length === 0) {
         return res.status(404).json({
           message: "Data Movie Not Found",
         });
@@ -108,9 +126,9 @@ class MovieController {
         message: "Success Get Movie by Category",
         data: {
           movies: dataMoviebyCategory,
-          totalItems,
+          total,
           page: page,
-          pageSizeLimit: dataMovie.length,
+          pageSizeLimit: dataMoviebyCategory.length,
           totalPage: Math.ceil(total / limit),
         },
       });
@@ -125,20 +143,20 @@ class MovieController {
 
   async getMoviebyTitle(req, res) {
     try {
-      const search = req.params.search || "";
+      const search = req.query.search;
 
       const dataSearch = await movie
         .find({ title: { $regex: search, $options: "i" } })
         .limit(10);
 
-      if (dataSearch === null) {
+      if (dataSearch.length === 0) {
         return res.status(404).json({
           message: "Data Movie Not Found",
         });
       }
       return res.status(200).json({
         message: "Success Get Movie by Search",
-        result: dataSearch,
+        data: dataSearch,
       });
     } catch (e) {
       console.error(e);
@@ -153,8 +171,8 @@ class MovieController {
     try {
       const dataOne = await movie
         .findOne({ _id: req.params.id })
-        .populate("reviews")
-        .populate("categorys")
+        //.populate("reviews")
+        //.populate("categorys")
         .populate("casts");
 
       if (dataOne === null) {
@@ -165,7 +183,7 @@ class MovieController {
 
       return res.status(200).json({
         message: "success",
-        result: dataOne,
+        data: dataOne,
       });
     } catch (e) {
       console.error(e);
@@ -191,7 +209,7 @@ class MovieController {
       await movie.deleteOne({ _id: req.params.id });
 
       return res.status(200).json({
-        message: `Success, Movie ${result.title} is Deleted`,
+        message: `Success, Movie ${data.title} is Deleted`,
       });
     } catch (e) {
       console.error(e);

@@ -14,10 +14,10 @@ mongoose
   .catch((err) => console.error(err));
 
 // Import models
-const caster = require("./caster");
+const cast = require("./cast");
 const movie = require("./movie");
 const review = require("./review");
-const user = require("./user");
-
+const user = require("./user"); // Import Auth
+//const category = require("./category")
 // Export models
-module.exports = { caster, movie, review, user };
+module.exports = { cast, movie, review, user };
