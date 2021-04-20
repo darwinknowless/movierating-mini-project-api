@@ -24,13 +24,14 @@ exports.getOne = (req, res, next) => {
 exports.create = async (req, res, next) => {
   try {
     let errors = [];
-
+  
+    req.body.userId = req.user.id;
     // check if userId is valid
-    if (!mongoose.Types.ObjectId.isValid(req.body.userId)) {
-      errors.push(
-        "User ID is not valid. Must be a 24 character-long hexadecimal"
-      );
-    }
+    // if (!mongoose.Types.ObjectId.isValid(req.body.userId)) {
+    //   errors.push(
+    //     "User ID is not valid. Must be a 24 character-long hexadecimal"
+    //   );
+    // }
 
     // check if movieId is valid
     if (!mongoose.Types.ObjectId.isValid(req.body.movieId)) {
@@ -89,13 +90,6 @@ exports.update = async (req, res, next) => {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
       errors.push(
         "Review ID is not valid. Must be a 24 character-long hexadecimal"
-      );
-    }
-
-    // check if userId is valid
-    if (!mongoose.Types.ObjectId.isValid(req.body.userId)) {
-      errors.push(
-        "User ID is not valid. Must be a 24 character-long hexadecimal"
       );
     }
 
@@ -166,7 +160,7 @@ exports.delete = async (req, res, next) => {
     }
 
     // find one review
-    let data = await review.findOne({ _id: req.params.id });
+    let data = await review.findOne({ _id: req.params.id, userId : req.user.id});
 
     // if review not found
     if (!data) {

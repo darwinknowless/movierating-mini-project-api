@@ -171,7 +171,7 @@ class MovieController {
     try {
       const dataOne = await movie
         .findOne({ _id: req.params.id })
-        //.populate("reviews")
+        .populate("reviews")
         //.populate("categorys")
         .populate("casts");
 

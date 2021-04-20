@@ -50,7 +50,12 @@ const MovieSchema = new mongoose.Schema(
         ref: "cast",
       },
     ],
-
+    reviews: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: "review",
+      },
+    ],
     //TODO input your schema header column here
   },
   {
