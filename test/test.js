@@ -5,12 +5,12 @@ const { review } = require("../models");
 
 let review_id;
 
-const movie_id = "5fccb5f3683964d75bd4d3c5";
-const user_id = "607a6c7398ae390b83778ee2";
+const movie_id = "607edd2406315321f3bd024e";
+const user_id = "607b2a4c6f495c4a8c0aff2f";
 
 const body = {
   user: {
-    id: "607a6c7398ae390b83778ee2",
+    id: "607b2a4c6f495c4a8c0aff2f",
   },
 };
 
@@ -151,7 +151,7 @@ describe("Review Test", () => {
     });
   });
 
-  describe("GET /review//movie/:movie_id", () => {
+  describe("GET /review/movie/:movie_id", () => {
     it("it should GET all review from movie", async () => {
       const res = await request(app).get(`/review/movie/${movie_id}`);
 

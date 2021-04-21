@@ -8,7 +8,7 @@ const auth = require("../middlewares/auth");
 
 // TODO POST
 router.get("/movie/:movie_id", reviewController.getAll);
-router.get("/movie/:user_id", reviewController.getUser);
+// router.get("/movie/:user_id", reviewController.getUser);
 router.get("/:review_id", reviewController.getOne);
 router.post("/create", reviewController.create);
 router.put("/:review_id", reviewController.update);
