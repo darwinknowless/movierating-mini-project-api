@@ -84,7 +84,7 @@ class UserController {
     }
   }
 
-  //Delete User
+  //show user User
   async getOne(req, res) {
     try {
       let data = await user.findOne({
@@ -120,6 +120,28 @@ class UserController {
         error: e,
       });
     }
+  }
+
+  async addwatchlist(req, res) {
+    try {
+      let data = await user.findOneAndUpdate(
+        { _id: req.user.id },
+        {
+          $set: {
+            $push: {
+              movie: req.body.movie_id,
+            },
+          },
+        },
+        {
+          new: true,
+        }
+      );
+      return res.status(201).json({
+        message: "Success",
+        data,
+      });
+    } catch (error) {}
   }
 }
 

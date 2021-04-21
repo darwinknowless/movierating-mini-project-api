@@ -32,4 +32,7 @@ router.get("/adminpage/", auth.admin, userController.getOne);
 router.get("/adminpage/users/", auth.admin, userController.getAll);
 router.delete("/delete", auth.user, userController.delete);
 
+
+router.post("/addwatchlist", auth.user, userController.addwatchlist);
+
 module.exports = router;
