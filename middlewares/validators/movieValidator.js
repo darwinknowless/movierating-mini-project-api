@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const path = require("path");
 const mongoose = require("mongoose");
 const validator = require("validator");
+const { movie } = require("../../models");
 
 exports.cekParamsId = async (req, res, next) => {
   // Check params is valid or not
@@ -61,4 +62,23 @@ exports.categoryValidator = async (req, res, next) => {
       message: "Internal Server Error",
     });
   }
+}
+
+  exports.updateValidator = async (req, res, next)=> {
+    try {
+      // Find one data
+      let data = await movie.findOne({ _id: req.params.id });
+
+      // If data not found
+      if (!data) {
+        return res.status(404).json({
+          message: "movie Not Found",
+        });
+      }
+      next();
+    } catch (error) {
+      return res.status(500).json({
+        message: "Internal Server Error",
+      });
+    }
 };

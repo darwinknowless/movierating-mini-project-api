@@ -1,53 +1,39 @@
-const { user, movie, review, cast } = require("../models");
+const { review, movie } = require("../models");
 
 class ReviewController {
-  //TODO Create Review
   async create(req, res) {
     try {
-      req.body.userId = req.user.id;
+      req.body.user = req.user.id;
+      console.log(req.body)
+      // Create data
+      let data = await review.create(req.body);
+      console.log(req.body)
 
-      const datamovie = await movie.findOne({_id : req.body.movieId});
-      console.log(datamovie)
-      if (!datamovie) {
-        return res.status(404).json({
-          message: `No movie with ${req.body.movieId}`,
-        });
-      }
-      // create data
-      const datareview = await review.create(req.body);
-      let newreview = await movie.updateOne(
-        { _id: req.body.movieId },
-        { $push: { reviews: datareview._id } },
-        { new: true }
-      );
-      // if successful
+      // let newreview = await movie.updateOne(
+      //   { _id: req.body.movieId },
+      //   { $push: { reviews: data._id } },
+      //   { new: true }
+      // );
+
       return res.status(201).json({
         message: "Success",
-        data: datareview,
+        data,
       });
     } catch (e) {
       console.log(e);
       return res.status(500).json({
-        message: "Internal server error",
+        message: "Internal Server Error",
         error: e.message,
       });
     }
   }
-  //TODO Get User Review
-  // async getUser(req, res) {
-  //   try {
-  //   } catch (e) {
-  //     console.log(e);
-  //   }
-  //}
-  //TODO Get All Reviews
+
   async getAllreviewByUser(req, res) {
     try {
-
-      req.body.userId = req.user.id;
+      req.body.user = req.user.id;
       // Find all data
       const datareviews = await review
-        .find({ movie: req.body.movieId })
+        .find({ user: req.body.user })
         .populate("movie");
       // If no data
       if (datareviews.length === 0) {
@@ -69,43 +55,32 @@ class ReviewController {
       });
     }
   }
-  //TODO One Review
-  // async getOne(req, res) {
-  //   try {
-  //     const review = await Review.findById(req.params.id).populate({
-  //       path: "Movie",
-  //       select: "name title",
-  //     });
-  //     // If no review
-  //     if (!review) {
-  //       return res.status(404).json({
-  //         message: `No review found with the id of ${req.params.id}`,
-  //       });
-  //     }
-  //     // If successful
-  //     return res.status(200).json({
-  //       message: "Success",
-  //       data,
-  //     });
-  //   } catch (e) {
-  //     return res.status(500).json({
-  //       message: "Internal Server Error",
-  //       error: err.message,
-  //     });
-  //   }
-  // } // end of Get One
 
-  //TODO Update Review
   async update(req, res) {
     try {
       req.body.userId = req.user.id;
-      datareview = await review.findByIdAndUpdate(req.params.id, req.body, {
-        new: true,
-      });
-      // If successful
+      const singleReview = await review.findById(req.params.id);
+
+      if (singleReview.userId.toString() !== req.user.id && req.user.id) {
+        return res.status(404).json({
+          message: `you are not the owner of this review`,
+        });
+      }
+      // Update data
+      let data = await review.findOneAndUpdate(
+        {
+          _id: req.params.id,
+        },
+        req.body, // This is all of req.body
+        {
+          new: true,
+        }
+      );
+
+      // If success
       return res.status(201).json({
         message: "Success",
-        data: datareview,
+        data,
       });
     } catch (e) {
       console.log(e);
@@ -115,37 +90,29 @@ class ReviewController {
       });
     }
   }
-  //TODO Delete Review
+
   async delete(req, res) {
     try {
       req.body.userId = req.user.id;
-      let datareview = await review.findById(req.params.id);
-      // If no review
-      if (!datareview) {
+      const singleReview = await review.findById(req.params.id);
+
+      if (singleReview.userId.toString() !== req.user.id && req.user.id) {
         return res.status(404).json({
-          message: `No review with ${req.params.id}`,
+          message: `you are not the owner of this review`,
         });
       }
-      // Make sure belongs to user or user is admin
-      // if (datareview.user.toString() !== req.user.id && req.user.role !== "user") {
-      //   return res.status(401).json({
-      //     message: `Not authorized to delete review`,
-      //   });
-      // }
+      // delete data depends on req.params.id
+      let data = await review.remove();
 
-      await datareview.remove();
-
-      // If successful
-      return res.status(201).json({
-        message: "Success",
-        data: datareview,
+      // If success
+      return res.status(200).json({
+        message: "Success to delete transaksi",
       });
-      // If Failed
     } catch (e) {
-      console.log(e);
+      // If failed
       return res.status(500).json({
         message: "Internal Server Error",
-        error: e,
+        error: e.message,
       });
     }
   }

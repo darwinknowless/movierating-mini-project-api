@@ -49,6 +49,13 @@ class MovieController {
       const update = await movie.updateOne({ _id: req.params.id }, req.body, {
         new: true,
       });
+      console.log(update)
+
+      if (update === null) {
+        return res.status(404).json({
+          message: "Movie Not Found",
+        });
+      }
 
       return res.status(200).json({
         message: "Success Update",
@@ -69,7 +76,6 @@ class MovieController {
 
       const dataMovie = await movie
         .find({})
-        .populate("cast")
         .select("title releaseYear ratingAvg poster")
         .sort({ createdAt: -1 })
         .skip((page - 1) * limit)
