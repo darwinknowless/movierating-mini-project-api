@@ -1,290 +1,171 @@
-const jwt = require("jsonwebtoken");
 const request = require("supertest");
-const app = require("../index"); // import server
-const { review } = require("../models");
+const app = require("../index");
 
-let review_id;
+const { user } = require("../models"); // import transaksi models
 
-const movieId = "607fea611d548316fef954fa";
-const userId = "607b2a4c6f495c4a8c0aff2f";
+let authenticationToken = "0";
 
-const body = {
-  user: {
-    id: "607b2a4c6f495c4a8c0aff2f",
-  },
-};
+describe("Authentication TEST", () => {
+  describe("/POST Sign Up", () => {
+    test("It should make user and get authentication_key (jwt)", async () => {
+      await user.collection.dropIndexes();
+      await user.deleteMany();
+      await user.collection.createIndex( { email: 1 } , { unique : true } );
+      const res = await request(app).post("/auth/signup").send({
+        name: "User Testing",
+        email: "testing@icloud.com",
+        password: "Pasword123!!",
+        confirmPassword: "Pasword123!!",
+      });
 
-const token = jwt.sign(body, process.env.JWT_SECRET, {
-  expiresIn: "60d",
-});
+      expect(res.statusCode).toEqual(200);
+      expect(res.body).toBeInstanceOf(Object);
+      expect(res.body.message).toEqual("success");
+      expect(res.body).toHaveProperty("token");
+    });
+  });
 
-const deleteAll = async () => {
-  await review.deleteMany();
-};
+  describe("/POST Sign Up (same email)", () => {
+    test("It should return error because same email was used", async () => {
+      const res = await request(app).post("/auth/signup").send({
+        name: "User Testing",
+        email: "testing@icloud.com",
+        password: "Pasword123!!",
+        confirmPassword: "Pasword123!!",
+      });
 
-deleteAll();
+      expect(res.statusCode).toEqual(401);
+      expect(res.body).toBeInstanceOf(Object);
+      expect(res.body.message).toEqual("Please use another email");
+    });
+  });
 
-//TODO //==========   R E V I E W   T E S T   ==========//
-describe("Review Test", () => {
-  //TODO //========== POST: review/create ==========//
-  //! Test : If Movie ID not Valid
-  describe("POST /review/create", () => {
-    it("Error: Movie ID is not valid", async () => {
-      const res = await request(app)
-        .post("/review/create")
-        .send({
-          movieId: "1",
-          rating: 6,
-          review: "Amazing movie",
-        })
-        .set({
-          Authorization: `Bearer ${token}`,
-        });
+  describe("/POST Sign Up (data send not complete)", () => {
+    test("It should return error because data body send is not complete", async () => {
+      const res = await request(app).post("/auth/signup").send({
+        name: "Yoga Testing",
+        password: "Pasword123!!",
+        confirmPassword: "Pasword123!!",
+      });
+
+      expect(res.statusCode).toEqual(500);
+      expect(res.body).toBeInstanceOf(Object);
+      expect(res.body.message).toEqual("internal server error");
+    });
+  });
+
+  describe("/POST Login", () => {
+    test("It should make user login and get authentication_key (jwt)", async () => {
+      const res = await request(app).post("/auth/login").send({
+        email: "testing@icloud.com",
+        password: "Pasword123!!",
+      });
+
+      expect(res.statusCode).toEqual(200);
+      expect(res.body).toBeInstanceOf(Object);
+      expect(res.body.message).toEqual("success");
+      expect(res.body).toHaveProperty("token");
+    });
+  });
+
+  describe("/POST Login (wrong password)", () => {
+    test("It should return error, because password not correct", async () => {
+      const res = await request(app).post("/auth/login").send({
+        email: "testing@icloud.com",
+        password: "Pasd12!!",
+      });
+
+      expect(res.statusCode).toEqual(401);
+      expect(res.body).toBeInstanceOf(Object);
+      expect(res.body.message).toEqual("Wrong password!");
+    });
+  });
+
+  describe("/POST Login (user not Found)", () => {
+    test("It should return Error because user not found", async () => {
+      const res = await request(app).post("/auth/login").send({
+        email: "cobatesting@icloud.com",
+        password: "Pasword123!!",
+      });
+
+      expect(res.statusCode).toEqual(401);
+      expect(res.body).toBeInstanceOf(Object);
+      expect(res.body.message).toEqual("User is not found!");
+    });
+  });
+
+  describe("/POST Login (data send not complete)", () => {
+    test("It should return Error because email not send", async () => {
+      const res = await request(app).post("/auth/login").send({
+        //email: "fahmial@icloud.com",
+        password: "Pasword123!!",
+      });
+
+      expect(res.statusCode).toEqual(500);
+      expect(res.body).toBeInstanceOf(Object);
+      expect(res.body.message).toEqual("internal server error");
+    });
+  });
+
+  describe("/POST Sign Up Name not Valid", () => {
+    test("It should return status 400 and error message", async () => {
+      const res = await request(app).post("/auth/signup").send({
+        name: "mas Reza123",
+        email: "fahmialfareza@icloud.com",
+        password: "Pasword123!!",
+        confirmPassword: "Pasword123!!",
+      });
+
       expect(res.statusCode).toEqual(400);
       expect(res.body).toBeInstanceOf(Object);
-      expect(res.body).toHaveProperty("message");
-      expect(res.body.message).toEqual("Movie ID is not valid");
+      expect(res.body.message).toEqual("Name must be alphabet");
     });
   });
-  //! Test : Rating is not Valid
-  describe("POST /review/create", () => {
-    it("Error: Rating is not valid", async () => {
-      const res = await request(app)
-        .post("/review/create")
-        .send({
-          movieId: movieId,
-          rating: 6,
-          review: "Amazing movie",
-        })
-        .set({
-          Authorization: `Bearer ${token}`,
-        });
-      expect(res.statusCode).toEqual(400);
-      expect(res.body).toBeInstanceOf(Object);
-      expect(res.body).toHaveProperty("message");
-      expect(res.body.message).toEqual("Rating is not valid");
-    });
-  });
-  //! Test : If Success
-  describe("POST /review/create", () => {
-    it("Success", async () => {
-      const res = await request(app)
-        .post("/review/create")
-        .send({
-          movieId: movieId,
-          rating: 4,
-          review: "Amazing movie",
-        })
-        .set({
-          Authorization: `Bearer ${token}`,
-        });
-      expect(res.statusCode).toEqual(201);
-      expect(res.body).toBeInstanceOf(Object);
-      expect(res.body).toHaveProperty("message");
-      expect(res.body.message).toEqual("Success Create Review");
-      review_id = res.body.data._id;
-    });
-  });
-  //! Test : If Movie ID already Review
-  describe("POST /review/create", () => {
-    it("Error: Already review this movie", async () => {
-      const res = await request(app)
-        .post("/review/create")
-        .send({
-          movieId: movieId,
-          rating: 5,
-          review: "Amazing movie WOW",
-        })
-        .set({
-          Authorization: `Bearer ${token}`,
-        });
+
+  describe("/POST Sign Up Email not Valid", () => {
+    test("It should return status 400 and error message", async () => {
+      const res = await request(app).post("/auth/signup").send({
+        name: "mas Reza",
+        email: "fahmialfarezaicloud.com",
+        password: "Pasword123!!",
+        confirmPassword: "Pasword123!!",
+      });
 
       expect(res.statusCode).toEqual(400);
       expect(res.body).toBeInstanceOf(Object);
-      expect(res.body).toHaveProperty("message");
-      expect(res.body.message).toEqual("You already reviewed this movie");
+      expect(res.body.message).toEqual("Email is not valid");
     });
   });
 
-  // describe("GET /review/movie/:movie_id", () => {
-  //   it("Error: Doesn't have reviewer", async () => {
-  //     const res = await request(app).get(`/review/movie/${movie_id}`);
+  describe("/POST Sign Up Weak Password", () => {
+    test("It should return status 400 and error message", async () => {
+      const res = await request(app).post("/auth/signup").send({
+        name: "mas Reza",
+        email: "fahmialfareza@icloud.com",
+        password: "Pasword123",
+        confirmPassword: "Pasword123",
+      });
 
-  //     expect(res.statusCode).toEqual(400);
-  //     expect(res.body).toBeInstanceOf(Object);
-  //     expect(res.body).toHaveProperty("message");
-  //     expect(res.body.message).toEqual("This movie doesn't have reviewer yet!");
-  //   });
-  // });
+      expect(res.statusCode).toEqual(400);
+      expect(res.body).toBeInstanceOf(Object);
+      expect(res.body.message).toEqual(
+        "password must have minimum length 8, minimum 1 lowercase character, minimum 1 uppercase character, minimum 1 numbers, and minimum 1 symbols"
+      );
+    });
+  });
 
-  // describe("GET /review/user/:user_id", () => {
-  //   it("Error: Not reviewing anything", async () => {
-  //     const res = await request(app).get(`/review/user/${user_id}`);
+  describe("/POST Sign Up Password not Match", () => {
+    test("It should return status 400 and error message", async () => {
+      const res = await request(app).post("/auth/signup").send({
+        name: "mas Reza",
+        email: "fahmialfareza@icloud.com",
+        password: "Aneh1234!!",
+        confirmPassword: "Ane234",
+      });
 
-  //     expect(res.statusCode).toEqual(400);
-  //     expect(res.body).toBeInstanceOf(Object);
-  //     expect(res.body).toHaveProperty("message");
-  //     expect(res.body.message).toEqual("You're not reviewing anything yet!");
-  //   });
-  // });
-
-  // describe("GET /review/details/:review_id", () => {
-  //   it("it should GET one review and error", async () => {
-  //     const res = await request(app).get(`/review/details/1`);
-
-  //     expect(res.statusCode).toEqual(400);
-  //     expect(res.body).toBeInstanceOf(Object);
-  //     expect(res.body).toHaveProperty("message");
-  //     expect(res.body.message).toEqual("Review ID is not valid");
-  //   });
-  // });
-
-  // describe("GET /review/details/:review_id", () => {
-  //   it("it should GET one review", async () => {
-  //     const res = await request(app).get(`/review/details/${review_id}`);
-
-  //     expect(res.statusCode).toEqual(200);
-  //     expect(res.body).toBeInstanceOf(Object);
-  //     expect(res.body).toHaveProperty("message");
-  //     expect(res.body.message).toEqual("Success");
-  //   });
-  // });
-
-  // describe("GET /review/movie/:movie_id", () => {
-  //   it("it should GET all review from movie", async () => {
-  //     const res = await request(app).get(`/review/movie/${movie_id}`);
-
-  //     expect(res.statusCode).toEqual(200);
-  //     expect(res.body).toBeInstanceOf(Object);
-  //     expect(res.body).toHaveProperty("message");
-  //     expect(res.body.message).toEqual("Success");
-  //   });
-  // });
-
-  // describe("GET /review/user/:user_id", () => {
-  //   it("it should GET all review from user", async () => {
-  //     const res = await request(app).get(`/review/user/${user_id}`);
-
-  //     expect(res.statusCode).toEqual(200);
-  //     expect(res.body).toBeInstanceOf(Object);
-  //     expect(res.body).toHaveProperty("message");
-  //     expect(res.body.message).toEqual("Success");
-  //   });
-  // });
-
-  // describe(`PUT /review/update/:review_id`, () => {
-  //   it("it should UPDATE a review and error", async () => {
-  //     const res = await request(app)
-  //       .put(`/review/update/${review_id}`)
-  //       .send({
-  //         movie_id: "1",
-  //         rating: 6,
-  //         review: "Really Amazing movie",
-  //       })
-  //       .set({
-  //         Authorization: `Bearer ${token}`,
-  //       });
-
-  //     expect(res.statusCode).toEqual(400);
-  //     expect(res.body).toBeInstanceOf(Object);
-  //     expect(res.body).toHaveProperty("message");
-  //     expect(res.body.message).toEqual("Movie ID is not valid");
-  //   });
-  // });
-
-  // describe(`PUT /review/update/:review_id`, () => {
-  //   it("it should UPDATE a review and error", async () => {
-  //     const res = await request(app)
-  //       .put(`/review/update/${review_id}`)
-  //       .send({
-  //         movie_id: movie_id,
-  //         rating: 6,
-  //         review: "Really Amazing movie",
-  //       })
-  //       .set({
-  //         Authorization: `Bearer ${token}`,
-  //       });
-
-  //     expect(res.statusCode).toEqual(400);
-  //     expect(res.body).toBeInstanceOf(Object);
-  //     expect(res.body).toHaveProperty("message");
-  //     expect(res.body.message).toEqual("Rating is not valid");
-  //   });
-  // });
-
-  // describe(`PUT /review/update/:review_id`, () => {
-  //   it("it should UPDATE a review", async () => {
-  //     const res = await request(app)
-  //       .put(`/review/update/${review_id}`)
-  //       .send({
-  //         movie_id: movie_id,
-  //         rating: 5,
-  //         review: "Really Amazing movie",
-  //       })
-  //       .set({
-  //         Authorization: `Bearer ${token}`,
-  //       });
-
-  //     expect(res.statusCode).toEqual(200);
-  //     expect(res.body).toBeInstanceOf(Object);
-  //     expect(res.body).toHaveProperty("message");
-  //     expect(res.body.message).toEqual("Success Update Review");
-  //   });
-  // });
-
-  // describe("DELETE /review/delete/:review_id", () => {
-  //   it("it should DELETE a review", async () => {
-  //     const res = await request(app)
-  //       .delete(`/review/delete/1`)
-  //       .set({
-  //         Authorization: `Bearer ${token}`,
-  //       });
-
-  //     expect(res.statusCode).toEqual(400);
-  //     expect(res.body).toBeInstanceOf(Object);
-  //     expect(res.body).toHaveProperty("message");
-  //     expect(res.body.message).toEqual("Review ID is not valid");
-  //   });
-  // });
-
-  // describe("DELETE /review/delete/:review_id", () => {
-  //   it("it should DELETE a review", async () => {
-  //     const res = await request(app)
-  //       .delete(`/review/delete/${review_id}`)
-  //       .set({
-  //         Authorization: `Bearer ${token}`,
-  //       });
-
-  //     expect(res.statusCode).toEqual(200);
-  //     expect(res.body).toBeInstanceOf(Object);
-  //     expect(res.body).toHaveProperty("message");
-  //     expect(res.body.message).toEqual("Success delete review");
-  //   });
-  // });
-
-  // describe("GET /review/details/:review_id", () => {
-  //   it("it should GET one review and error", async () => {
-  //     const res = await request(app).get(`/review/details/${review_id}`);
-
-  //     expect(res.statusCode).toEqual(400);
-  //     expect(res.body).toBeInstanceOf(Object);
-  //     expect(res.body).toHaveProperty("message");
-  //     expect(res.body.message).toEqual("Review not found!");
-  //   });
-  // });
-
-  // describe("DELETE /review/delete/:review_id", () => {
-  //   it("it should DELETE a review and error", async () => {
-  //     const res = await request(app)
-  //       .delete(`/review/delete/${review_id}`)
-  //       .set({
-  //         Authorization: `Bearer ${token}`,
-  //       });
-
-  //     expect(res.statusCode).toEqual(400);
-  //     expect(res.body).toBeInstanceOf(Object);
-  //     expect(res.body).toHaveProperty("message");
-  //     expect(res.body.message).toEqual("Review not found");
-  //   });
-  // });
+      expect(res.statusCode).toEqual(400);
+      expect(res.body).toBeInstanceOf(Object);
+      expect(res.body.message).toEqual("password does not match");
+    });
+  });
 });
