@@ -65,14 +65,6 @@ class ReviewController {
   async update(req, res) {
     try {
       req.body.userId = req.user.id;
-      const singleReview = await review.findById(req.params.id);
-
-      if (singleReview.userId.toString() !== req.user.id && req.user.id) {
-        return res.status(404).json({
-          message: `you are not the owner of this review`,
-        });
-      }
-      // Update data
       let data = await review.findOneAndUpdate(
         {
           _id: req.params.id,
@@ -82,7 +74,6 @@ class ReviewController {
           new: true,
         }
       );
-
       // If success
       return res.status(201).json({
         message: "Success",
@@ -111,21 +102,11 @@ class ReviewController {
 
   async delete(req, res) {
     try {
-      req.body.userId = req.user.id;
-      const singleReview = await review.findById(req.params.id);
-
-      if (singleReview.userId.toString() !== req.user.id && req.user.id) {
-        return res.status(404).json({
-          message: `you are not the owner of this review`,
-        });
-      }
-
-      // delete data depends on req.params.id
-      let data = await review.deleteOne({ _id: req.params.id }).exec();
+      await review.delete();
 
       // If success
       return res.status(200).json({
-        message: "Success to delete transaksi",
+        message: "Success to delete review",
       });
     } catch (e) {
       // If failed
