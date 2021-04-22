@@ -44,12 +44,16 @@ router.get("/:page", movieValidator.getAllValidator, movieController.getAll);
 router.put(
   "/update/:id",
   auth.admin,
+  movieValidator.cekParamsId,
+  movieValidator.updateValidator,
   movieUpload.uploadPoster,
   movieController.updateMovie
 );
 router.put(
   "/updatecast/:id",
   auth.admin,
+  movieValidator.cekParamsId,
+  movieValidator.updateValidator,
   movieUpload.uploadPoster,
   movieController.updateMovieCast
 );

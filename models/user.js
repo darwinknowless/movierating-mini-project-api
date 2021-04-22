@@ -1,8 +1,15 @@
 const mongoose = require("mongoose"); //Import mongoose
 const mongooseDelete = require("mongoose-delete"); //Package to enable soft delete
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
 
 //Add Schema
+const WatchlistSchema = new mongoose.Schema({
+  movie:{
+    type: mongoose.Schema.ObjectId,
+    ref: "movie"
+  }
+});
+
 const UserSchema = new mongoose.Schema(
   {
     //TODO input your schema header column here
@@ -25,9 +32,12 @@ const UserSchema = new mongoose.Schema(
       default: "user",
       required: true,
     },
-    profilPhoto: {
+    watchlist:{
+      type: [WatchlistSchema]
+    },
+    image: {
       type: String,
-      default: "urlPhoto",
+      default: null,
       required: false,
       //get
       get: getImage,
@@ -45,15 +55,15 @@ const UserSchema = new mongoose.Schema(
 
 //getter function for barang
 function getImage(image) {
-  return `/images/userPhoto${image}`;
+  return `/images/userPhoto/${image}`;
 }
 
 //encrypting the password
-function  encryptPassword(password){
-  const encryptedPassword =  bcrypt.hashSync(password, 10);
+function encryptPassword(password) {
+  const encryptedPassword = bcrypt.hashSync(password, 10);
   return encryptedPassword;
 }
 // Enable soft delete
 UserSchema.plugin(mongooseDelete, { overrideMethods: "all" });
 
-module.exports = mongoose.model("User", UserSchema); //Export model
+module.exports = mongoose.model("user", UserSchema); //Export model
