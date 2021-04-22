@@ -8,3 +8,5 @@ public/images/castPhoto/*
 public/images/moviePoster/*
 public/images/userPhoto/*
 coverage/
+access.log
+SSH.md
