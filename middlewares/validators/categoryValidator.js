@@ -1,103 +1,37 @@
 const mongoose = require("mongoose");
+const { ObjectId } = require("mongodb");
 const validator = require("validator");
-const { category } = require("../../models");
+const { cast, movie } = require("../../models");
 
-class CategoryValidator {
-  async getOne(req, res, next) {
-    try {
-      let errors = [];
-      let checkId = mongoose.Types.ObjectId.isValid(req.params.id);
-      if (!checkId) {
-        errors.push(`ID is invalid`);
-      }
-
-      if (errors.length > 0) {
-        return res.status(400).json({
-          message: errors.join(", "),
-        });
-      }
-      next();
-    } catch (e) {
-      console.log(e);
-      return res.status(500).json({
-        error: e,
-      });
-    }
+exports.getOne = (req, res, next) => {
+  // Check parameter is valid or not
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    return res.status(404).json({
+      message: "Data Not Found",
+    });
   }
 
-  async delete(req, res, next) {
-    try {
-      let errors = [];
-      let checkId = mongoose.Types.ObjectId.isValid(req.params.id);
-      if (!checkId) {
-        errors.push(`ID is invalid`);
-      }
+  next();
+};
 
-      if (errors.length > 0) {
-        return res.status(400).json({
-          message: errors.join(", "),
-        });
-      }
-      next();
-    } catch (e) {
-      console.log(e);
-      return res.status(500).json({
-        error: e,
-      });
-    }
+exports.update = async (req, res, next) => {
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    return res.status(404).json({
+      message: "Data Not Found",
+    });
   }
 
-  async create(req, res, next) {
-    try {
-      let errors = [];
-      //check if name is just using alphabet
-      if (!validator.isAlphanumeric(validator.blacklist(req.body.name, " "))) {
-        errors.push("Name must be alphabet only");
-      }
+  next();
+};
 
-      if (errors.length > 0) {
-        return res.status(400).json({
-          message: errors.join(", "),
-        });
-      }
-      next();
-    } catch (e) {
-      console.log(e);
-      return res.status(500).json({
-        error: e,
-      });
-    }
+exports.delete = async (req, res, next) => {
+  let errors = [];
+
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    return res.status(404).json({
+      message: "Data Not Found",
+    });
   }
 
-  async update(req, res, next) {
-    try {
-      let errors = [];
-      let checkId = mongoose.Types.ObjectId.isValid(req.params.id);
-      if (!checkId) {
-        errors.push(`ID is invalid`);
-      }
-      //check if naea is just using alphabet
-      if (!validator.isAlphanumeric(validator.blacklist(req.body.nama, " "))) {
-        errors.push("Nama harus diisi dengan huruf saja");
-      }
-      //check if name is just using alphabet
-      if (!validator.isAlphanumeric(validator.blacklist(req.body.name, " "))) {
-        errors.push("Name must be alphabet only");
-      }
-      if (errors.length > 0) {
-        return res.status(400).json({
-          message: errors.join(", "),
-        });
-      }
-
-      next();
-    } catch (e) {
-      console.log(e);
-      return res.status(500).json({
-        error: e,
-      });
-    }
-  }
-}
-
-module.exports = new CategoryValidator();
+  next();
+};

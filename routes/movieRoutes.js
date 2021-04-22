@@ -24,6 +24,8 @@ router.delete(
   movieController.deleteMovie
 );
 router.get("/movieOne/:id", movieValidator.cekParamsId, movieController.getOne);
+router.get("/movieCast/:id", movieValidator.cekParamsId, movieController.getAllCastInMovie);
+router.get("/movieReviews/:id", movieValidator.cekParamsId, movieController.getMovieAllReviews);
 
 router.get("/search/", movieController.getMoviebyTitle);
 

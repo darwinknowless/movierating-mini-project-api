@@ -5,13 +5,16 @@ const CategorySchema = new mongoose.Schema(
   {
     name: {
       type: String,
+      unique: true,
       required: true,
     },
-    movies: {
-      type: [mongoose.Schema.Types.ObjectId],
-      ref: "movie",
-      required: false,
-    },
+    movies: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: "movie",
+        required: false,
+      },
+    ]
   },
   {
     // Enable timestamps

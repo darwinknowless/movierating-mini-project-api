@@ -9,6 +9,8 @@ const uploadCastPhoto = require("../middlewares/uploads/uploadFlow")
 // Import controller
 const castController = require("../controllers/castControllers");
 
+const auth = require("../middlewares/auth")
+
 // Make router
 const router = express.Router();
 
@@ -19,7 +21,7 @@ router.get("/", castController.getAll);
 router.get("/:id",  castController.getOne);
 
 // Create transaksi
-router.post("/", uploadCastPhoto.uploadCastPhoto, castController.create);
+router.post("/", auth.admin, uploadCastPhoto.uploadCastPhoto, castController.create);
 
 // Update transaksi
 router.put("/:id", castController.update);

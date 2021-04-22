@@ -10,7 +10,7 @@ exports.signup = async (req, res, next) => {
     errors.push("email field must be valid");
   }
 
-  if (!validator.isStrongPassword(req.body.password)) {
+  if (!validator.isStrongPassword(req.body.password, { minSymbols: 0,})) {
     errors.push(
       "password must contain min 8 chars, min 1 UpperCase, min 1 LowerCase, 1 numb, 1 symbol"
     );
@@ -29,7 +29,7 @@ exports.signup = async (req, res, next) => {
   }
 
   //=======================FOR IMAGE UPLOAD==================
-  if ((req, res)) {
+  if ((req.files)) {
     const file = req.files.image;
 
     //validator for image
@@ -66,7 +66,7 @@ exports.signin = async (req, res, next) => {
     errors.push("email field must be valid");
   }
 
-  if (!validator.isStrongPassword(req.body.password)) {
+  if (!validator.isStrongPassword(req.body.password, { minSymbols: 0,})) {
     errors.push(
       "password must contain min 8 chars, min 1 UpperCase, min 1 LowerCase, 1 numb, 1 symbol"
     );
@@ -89,7 +89,7 @@ exports.update = async (req, res, next) => {
     errors.push("email field must be valid");
   }
 
-  if (!validator.isStrongPassword(req.body.password)) {
+  if (!validator.isStrongPassword(req.body.password, { minSymbols: 0,})) {
     errors.push(
       "password must contain min 8 chars, min 1 UpperCase, min 1 LowerCase, 1 numb, 1 symbol"
     );
@@ -108,7 +108,7 @@ exports.update = async (req, res, next) => {
   }
 
   //=======================FOR IMAGE UPLOAD==================
-  if ((req, res)) {
+  if ((req.files)) {
     const file = req.files.image;
 
     //validator for image

@@ -38,18 +38,17 @@ const MovieSchema = new mongoose.Schema(
       default: 0,
       required: false, //change soon
     },
-    category: {
-      type: [String],
-      default: ["Unknow"],
-      require: true,
+  
+    casts: {
+      type: [mongoose.Schema.ObjectId],
+      ref: "cast",
     },
 
-    casts: 
-      {
-        type: [mongoose.Schema.ObjectId],
-        ref: "cast",
-      },
-    
+    castegorys: {
+      type: [mongoose.Schema.ObjectId],
+      ref: "category",
+    },
+
     //TODO input your schema header column here
   },
   {
@@ -73,7 +72,9 @@ MovieSchema.virtual("reviews", {
   localField: "_id",
   foreignField: "movie",
   justOne: false,
-}); 
+});
+
+
 
 // Enable soft delete
 MovieSchema.plugin(mongooseDelete, { overrideMethods: "all" });
