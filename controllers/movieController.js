@@ -1,4 +1,4 @@
-const { user, movie, review, cast, category } = require("../models");
+const { user, movie, review, cast } = require("../models");
 
 class MovieController {
   async create(req, res) {
@@ -8,12 +8,6 @@ class MovieController {
       let newcast = await cast.updateMany(
         { _id: req.body.casts },
         { $push: { filmography: data._id } },
-        { new: true }
-      );
-
-      let newcategory = await category.updateMany(
-        { _id: req.body.categorys },
-        { $push: { movies: data._id } },
         { new: true }
       );
       // If success
@@ -55,7 +49,7 @@ class MovieController {
       const update = await movie.updateOne({ _id: req.params.id }, req.body, {
         new: true,
       });
-      console.log(update);
+      console.log(update)
 
       if (update === null) {
         return res.status(404).json({
@@ -83,7 +77,6 @@ class MovieController {
       const dataMovie = await movie
         .find({})
         .select("title releaseYear ratingAvg poster")
-        .populate("categorys")
         .sort({ createdAt: -1 })
         .skip((page - 1) * limit)
         .limit(limit);
@@ -112,75 +105,47 @@ class MovieController {
       });
     }
   }
-  
-  // async getMoviebyCategory(req, res) {
-  //   try {
-  //     const dataOne = await movie
-  //       .findOne({ _id: req.params.id })
-  //       .select("title ratingAvg synopsis urlTrailer")
-  //       //.populate("reviews")
-  //       .populate("categorys")
-  //       //.populate("casts");
 
-  //     if (dataOne === null) {
-  //       return res.status(404).json({
-  //         message: "Data Movie Not Found",
-  //       });
-  //     }
+  async getMoviebyCategory(req, res) {
+    try {
+      const page = parseInt(req.params.page) || 1; //for next page pass 1 here
+      const limit = 10;
+      let total = await movie
+        .find({ category: req.query.category })
+        .countDocuments();
 
-  //     return res.status(200).json({
-  //       message: "success",
-  //       data: dataOne,
-  //     });
-  //   } catch (e) {
-  //     console.error(e);
-  //     return res.status(500).json({
-  //       message: "Internal Server Error",
-  //       error: e,
-  //     });
-  //   }
-  // }
+      const skip = (page - 1) * limit;
 
-  // async getMoviebyCategory(req, res) {
-  //   try {
-  //     const page = parseInt(req.params.page) || 1; //for next page pass 1 here
-  //     const limit = 10;
-  //     let total = await movie
-  //       .find({ category: req.body.category })
-  //       .countDocuments();
+      const dataMoviebyCategory = await movie
+        .find({
+          category: req.params.category,
+        })
+        .skip(skip)
+        .limit(limit);
 
-  //     const skip = (page - 1) * limit;
-
-  //     const dataMoviebyCategory = await movie
-  //       .find({
-  //         category: req.body.category,
-  //       })
-  //       .skip(skip)
-  //       .limit(limit);
-
-  //     if (dataMoviebyCategory.length === 0) {
-  //       return res.status(404).json({
-  //         message: "Data Movie Not Found",
-  //       });
-  //     }
-  //     return res.status(200).json({
-  //       message: "Success Get Movie by Category",
-  //       data: {
-  //         movies: dataMoviebyCategory,
-  //         total,
-  //         page: page,
-  //         pageSizeLimit: dataMoviebyCategory.length,
-  //         totalPage: Math.ceil(total / limit),
-  //       },
-  //     });
-  //   } catch (e) {
-  //     console.error(e);
-  //     return res.status(500).json({
-  //       message: "Internal Server Error",
-  //       error: e,
-  //     });
-  //   }
-  // }
+      if (dataMoviebyCategory.length === 0) {
+        return res.status(404).json({
+          message: "Data Movie Not Found",
+        });
+      }
+      return res.status(200).json({
+        message: "Success Get Movie by Category",
+        data: {
+          movies: dataMoviebyCategory,
+          total,
+          page: page,
+          pageSizeLimit: dataMoviebyCategory.length,
+          totalPage: Math.ceil(total / limit),
+        },
+      });
+    } catch (e) {
+      console.error(e);
+      return res.status(500).json({
+        message: "Internal Server Error",
+        error: e,
+      });
+    }
+  }
 
   async getMoviebyTitle(req, res) {
     try {
@@ -208,63 +173,13 @@ class MovieController {
     }
   }
 
-  async getMovieAllReviews(req, res) {
-    try {
-      const dataOne = await movie
-        .findOne({ _id: req.params.id })
-        .select("title ratingAvg synopsis urlTrailer")
-        .populate("reviews")
-        //.populate("categorys")
-        //.populate("casts");
-
-      if (dataOne === null) {
-        return res.status(404).json({
-          message: "Data Movie Not Found",
-        });
-      }
-
-      return res.status(200).json({
-        message: "success",
-        data: dataOne,
-      });
-    } catch (e) {
-      console.error(e);
-      return res.status(500).json({
-        message: "Internal Server Error",
-        error: e,
-      });
-    }
-  }
-  async getAllCastInMovie(req, res) {
-    try {
-      const dataOne = await movie
-        .findOne({ _id: req.params.id })
-        .select("title ratingAvg synopsis urlTrailer")
-        .populate("casts");
-       
-
-      if (dataOne === null) {
-        return res.status(404).json({
-          message: "Data Movie Not Found",
-        });
-      }
-
-      return res.status(200).json({
-        message: "success",
-        data: dataOne,
-      });
-    } catch (e) {
-      console.error(e);
-      return res.status(500).json({
-        message: "Internal Server Error",
-        error: e,
-      });
-    }
-  }
   async getOne(req, res) {
     try {
       const dataOne = await movie
         .findOne({ _id: req.params.id })
+        .populate("reviews")
+        //.populate("categorys")
+        .populate("casts");
 
       if (dataOne === null) {
         return res.status(404).json({
@@ -284,6 +199,7 @@ class MovieController {
       });
     }
   }
+
   async deleteMovie(req, res) {
     try {
       const data = await movie.findOne({ _id: req.params.id });

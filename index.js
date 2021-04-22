@@ -21,7 +21,7 @@ const reviewRoutes = require("./routes/reviewRoutes");
 const movieRoutes = require("./routes/movieRoutes");
 const castRoutes = require("./routes/castRoutes");
 const userRoutes = require("./routes/userRoutes");
-const categoryRoutes = require("./routes/categoryRoutes");
+
 // Make App
 const app = express();
 
@@ -83,7 +83,6 @@ app.use("/review", reviewRoutes);
 app.use("/movie", movieRoutes);
 app.use("/cast", castRoutes);
 app.use("/user", userRoutes);
-app.use("/category", categoryRoutes);
 
 // If environment is not test
 if (process.env.NODE_ENV !== "test") {

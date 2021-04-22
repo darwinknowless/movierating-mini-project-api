@@ -24,21 +24,19 @@ router.delete(
   movieController.deleteMovie
 );
 router.get("/movieOne/:id", movieValidator.cekParamsId, movieController.getOne);
-router.get("/movieCast/:id", movieValidator.cekParamsId, movieController.getAllCastInMovie);
-router.get("/movieReviews/:id", movieValidator.cekParamsId, movieController.getMovieAllReviews);
 
 router.get("/search/", movieController.getMoviebyTitle);
 
-// router.get(
-//   "/category/:category",
-//   //movieValidator.categoryValidator,
-//   movieController.getMoviebyCategory
-// );
-// router.get(
-//   "/category/:category/:page",
-//   //movieValidator.categoryValidator,
-//   movieController.getMoviebyCategory
-// );
+router.get(
+  "/category/:category",
+  //movieValidator.categoryValidator,
+  movieController.getMoviebyCategory
+);
+router.get(
+  "/category/:category/:page",
+  //movieValidator.categoryValidator,
+  movieController.getMoviebyCategory
+);
 
 router.get("/", movieValidator.getAllValidator, movieController.getAll);
 router.get("/:page", movieValidator.getAllValidator, movieController.getAll);
