@@ -4,27 +4,33 @@ class ReviewController {
   async create(req, res) {
     try {
       req.body.user = req.user.id;
-      console.log(req.body)
+      console.log(req.body);
       // Create data
       let data = await review.create(req.body);
-      console.log(req.body)
-
-      // let newreview = await movie.updateOne(
-      //   { _id: req.body.movieId },
-      //   { $push: { reviews: data._id } },
-      //   { new: true }
-      // );
+      console.log(req.body);
 
       return res.status(201).json({
         message: "Success",
         data,
       });
     } catch (e) {
-      console.log(e);
-      return res.status(500).json({
-        message: "Internal Server Error",
-        error: e.message,
-      });
+      if (
+        e.code == 11000 &&
+        e.keyPattern.movie_id == 1 &&
+        e.keyPattern.user_id == 1
+      ) {
+        //console.log(e);
+        return res.status(400).json({
+          message: "Error",
+          error: "User has been reviewed this movie",
+        });
+      } else {
+        console.log(e);
+        return res.status(500).json({
+          message: "Internal Server Error",
+          error: e.message,
+        });
+      }
     }
   }
 
@@ -83,11 +89,23 @@ class ReviewController {
         data,
       });
     } catch (e) {
-      console.log(e);
-      return res.status(500).json({
-        message: "Internal Server Error",
-        error: e.message,
-      });
+      if (
+        e.code == 11000 &&
+        e.keyPattern.movie_id == 1 &&
+        e.keyPattern.user_id == 1
+      ) {
+        console.log(e);
+        return res.status(400).json({
+          message: "Error",
+          error: "User has been reviewed this movie",
+        });
+      } else {
+        console.log(e);
+        return res.status(500).json({
+          message: "Internal Server Error",
+          error: e.message,
+        });
+      }
     }
   }
 
@@ -101,8 +119,9 @@ class ReviewController {
           message: `you are not the owner of this review`,
         });
       }
+
       // delete data depends on req.params.id
-      let data = await review.remove();
+      let data = await review.deleteOne({ _id: req.params.id }).exec();
 
       // If success
       return res.status(200).json({
