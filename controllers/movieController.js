@@ -111,7 +111,7 @@ class MovieController {
       const page = parseInt(req.params.page) || 1; //for next page pass 1 here
       const limit = 10;
       let total = await movie
-        .find({ category: req.params.category })
+        .find({ category: req.query.category })
         .countDocuments();
 
       const skip = (page - 1) * limit;

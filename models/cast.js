@@ -7,14 +7,14 @@ const CastSchema = new Schema(
       unique: true,
       required: true,
     },
-    birthdate: {
-      type: Date,
-      required: false,
-    },
-    age: {
-      type: Number,
-      required: false,
-    },
+    // birthdate: {
+    //   type: Date,
+    //   required: false,
+    // },
+    // age: {
+    //   type: Number,
+    //   required: false,
+    // },
     image: {
       type: String,
       default: null,
