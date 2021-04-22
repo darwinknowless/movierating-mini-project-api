@@ -83,6 +83,7 @@ class MovieController {
       const dataMovie = await movie
         .find({})
         .select("title releaseYear ratingAvg poster")
+        .populate("categorys")
         .sort({ createdAt: -1 })
         .skip((page - 1) * limit)
         .limit(limit);
@@ -111,33 +112,34 @@ class MovieController {
       });
     }
   }
-  async getMoviebyCategory(req, res) {
-    try {
-      const dataOne = await movie
-        .findOne({ _id: req.params.id })
-        .select("title ratingAvg synopsis urlTrailer")
-        //.populate("reviews")
-        .populate("categorys")
-        //.populate("casts");
+  
+  // async getMoviebyCategory(req, res) {
+  //   try {
+  //     const dataOne = await movie
+  //       .findOne({ _id: req.params.id })
+  //       .select("title ratingAvg synopsis urlTrailer")
+  //       //.populate("reviews")
+  //       .populate("categorys")
+  //       //.populate("casts");
 
-      if (dataOne === null) {
-        return res.status(404).json({
-          message: "Data Movie Not Found",
-        });
-      }
+  //     if (dataOne === null) {
+  //       return res.status(404).json({
+  //         message: "Data Movie Not Found",
+  //       });
+  //     }
 
-      return res.status(200).json({
-        message: "success",
-        data: dataOne,
-      });
-    } catch (e) {
-      console.error(e);
-      return res.status(500).json({
-        message: "Internal Server Error",
-        error: e,
-      });
-    }
-  }
+  //     return res.status(200).json({
+  //       message: "success",
+  //       data: dataOne,
+  //     });
+  //   } catch (e) {
+  //     console.error(e);
+  //     return res.status(500).json({
+  //       message: "Internal Server Error",
+  //       error: e,
+  //     });
+  //   }
+  // }
 
   // async getMoviebyCategory(req, res) {
   //   try {

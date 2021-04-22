@@ -1,4 +1,3 @@
-
 const { category, movie } = require("../models");
 
 class CategoryController {
@@ -6,11 +5,11 @@ class CategoryController {
     try {
       // If image was uploaded
       //move to upload flow
-     
+
       // Create cast data
       let createdData = await category.create(req.body);
 
-      console.log(req.body)
+      console.log(req.body);
 
       // find created data and join with cast
       // let data = await cast.findOne({ _id: createdData._id }).populate("movie");
@@ -57,7 +56,9 @@ class CategoryController {
   async getOne(req, res) {
     try {
       // Find one data
-      let data = await category.findOne({ _id: req.params.id });
+      let data = await category
+        .findOne({ _id: req.params.id })
+        .populate("movies");
 
       // If data not found
       if (!data) {
@@ -91,7 +92,9 @@ class CategoryController {
           new: true,
         }
       );
-      let dataupdate = await category.findOne({ _id: req.params.id }).populate("filmography");
+      let dataupdate = await category
+        .findOne({ _id: req.params.id })
+        .populate("filmography");
 
       // If success
       return res.status(201).json({

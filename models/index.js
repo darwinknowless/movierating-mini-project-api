@@ -20,4 +20,4 @@ const review = require("./review");
 const user = require("./user"); // Import Auth
 const category = require("./category")
 // Export models
-module.exports = { cast, movie, review, user };
+module.exports = { cast, movie, review, user, category };
