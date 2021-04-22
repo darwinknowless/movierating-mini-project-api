@@ -38,8 +38,8 @@ app.use("/user", userRoutes);
 // If environment is not test
 if (process.env.NODE_ENV !== "test") {
   // Running server
-  let PORT = 3000 || process.env.PORT;
-  app.listen(PORT, () => console.log(`Server running on ${PORT}!`));
+  // let PORT = 3000 || process.env.PORT;
+  app.listen(3000, () => console.log(`Server running on 3000!`));
 }
 
 module.exports = app;

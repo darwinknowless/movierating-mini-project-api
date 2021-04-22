@@ -29,7 +29,7 @@ exports.signup = async (req, res, next) => {
   }
 
   //=======================FOR IMAGE UPLOAD==================
-  if ((req, res)) {
+  if ((req.files)) {
     const file = req.files.image;
 
     //validator for image
@@ -108,7 +108,7 @@ exports.update = async (req, res, next) => {
   }
 
   //=======================FOR IMAGE UPLOAD==================
-  if ((req, res)) {
+  if ((req.files)) {
     const file = req.files.image;
 
     //validator for image
