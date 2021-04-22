@@ -15,7 +15,7 @@ const auth = require("../middlewares/auth");
 // Make router
 const router = express.Router();
 
-router.post("/", auth.admin, movieUpload.uploadPoster, movieController.create);
+router.post("/", movieUpload.uploadPoster, movieController.create);
 
 router.delete(
   "/:id",
