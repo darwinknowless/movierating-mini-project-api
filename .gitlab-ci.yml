@@ -1,6 +1,6 @@
 # We have 2 stage Test and Deploy
 stages:
-  - test
+  # - test
   - deploy
 
 # Config cache
@@ -8,26 +8,26 @@ cache:
   paths:
     - node_modules/
 
-# Test job
-test:
-  # Docker image
-  image: node:latest
-  # Attach Test job to Test stage
-  stage: test
+# # Test job
+# test:
+#   # Docker image
+#   image: node:latest
+#   # Attach Test job to Test stage
+#   stage: test
   
-  script:
-  # Config to use GitLab Shared Runner with Executor Docker
-  tags:
-    - docker
-  script:
-    - echo "MONGO_URI"=$ENVIRONMENT_TEST_MONGO_URI > .env.test
-    - echo "JWT_SECRET"=$ENVIRONMENT_TEST_JWT_SECRET >> .env.test
-    - npm i
-    - npm run test
-  # Defines the names of branches and tags the job runs for
-  only:
-    # Branch on Gitlab
-    - ci-cd
+#   script:
+#   # Config to use GitLab Shared Runner with Executor Docker
+#   tags:
+#     - docker
+#   script:
+#     - echo "MONGO_URI"=$ENVIRONMENT_TEST_MONGO_URI > .env.test
+#     - echo "JWT_SECRET"=$ENVIRONMENT_TEST_JWT_SECRET >> .env.test
+#     - npm i
+#     - npm run test
+#   # Defines the names of branches and tags the job runs for
+#   only:
+#     # Branch on Gitlab (u can change this with your branch)
+#     - develop
 
 # Deploy job
 deploy:
@@ -37,7 +37,7 @@ deploy:
   # Config to use our Runner with Executor Shell
   tags:
     # Tag is runner u make before
-    - ci-cd-afternoon
+    - project-team-c
   script:
     # Only copy changed files to project folder
     - cp -r -u * $PROJECT_DIR
@@ -49,5 +49,5 @@ deploy:
     - npm run stop
     - npm run start
   only:
-    # Branch on Gitlab
-    - ci-cd
+    # Branch on Gitlab (u can change this with your branch)
+    - develop
