@@ -1,12 +1,11 @@
 const express = require("express");
+const router = express.Router();
 // const passport = require("passport");
 const userController = require("../controllers/userController");
 const userValidator = require("../middlewares/validators/userValidator");
 const auth = require("../middlewares/auth");
 const uploadUserPhoto = require("../middlewares/uploads/uploadFlow");
-
-const router = express.Router();
-
+// User end point
 router.post(
   "/signup",
   userValidator.signup,

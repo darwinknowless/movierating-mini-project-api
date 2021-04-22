@@ -1,76 +1,80 @@
 const mongoose = require("mongoose");
 const mongooseDelete = require("mongoose-delete"); // Import mongoose-delete
-const Schema = mongoose.Schema;
+
 
 // Review Schema
-const ReviewSchema = new Schema(
+const ReviewSchema = new mongoose.Schema(
   {
-    review: {
-      type: String,
+    user : {
+      type: mongoose.Schema.ObjectId,
+      ref: "user",
       required: true,
+    },
+    movie : {
+      type: mongoose.Schema.ObjectId,
+      required: true,
+      ref : 'movie',
     },
     rating: {
       type: Number,
       required: true,
-      min: 1,
-      max: 5,
-      required: [true, "Please rate between 1 and 5"],
     },
-    movieId: {
-      type: Schema.Types.ObjectId,
-      ref: "movie",
-      required: true,
-    },
-    userId: {
-      type: Schema.Types.ObjectId,
-      ref: "user",
-      required: true,
+    review: {
+      type: String,
+      required: false,
     },
   },
   {
     timestamps: {
-      createdAt: "createdAt",
-      updatedAt: "updatedAt",
+      createdAt: "created_at",
+      updatedAt: "updated_at",
     },
   }
 );
 
-// only permits user to submit one review per movie
-ReviewSchema.index({ movie: 1, user: 1 }, { unique: true });
+// Prevent user for submitting more than one review per movie
+ReviewSchema.index({ user: 1, movie: 1 }, { unique: true });
 
-// Static method to get average rating
+// Static method to get averaga rating
 ReviewSchema.statics.getAverageRating = async function (movieId) {
+
   const obj = await this.aggregate([
     {
       $match: { movie: movieId },
     },
     {
-      /*fix this */
       $group: {
         _id: "$movie",
-        averageRating: { $avg: "$rating" },
+        ratingAvg: { $avg: "$rating" },
       },
     },
   ]);
 
   try {
-    await this.model("Movie").findByIdAndUpdate(movieId, {
-      averageRating: obj[0].averageRating,
+    await this.model("movie").findByIdAndUpdate(movieId, {
+      ratingAvg: obj[0].ratingAvg,
     });
-  } catch (err) {
-    console.error(err);
+  } catch (e) {
+    console.error(e);
   }
 };
 
-// call getAverageRating after posting review
+// call getAverageCost after save
 ReviewSchema.post("save", function () {
   this.constructor.getAverageRating(this.movie);
 });
 
-// call getAverageRating after deleting review
-ReviewSchema.pre("remove", function () {
+// call getAverageCost after update
+ReviewSchema.post("update", function () {
   this.constructor.getAverageRating(this.movie);
 });
+
+// call getAverageCost after remove
+ReviewSchema.post("remove", function () {
+  this.constructor.getAverageRating(this.movie);
+});
+
+
 
 // enable soft delete
 ReviewSchema.plugin(mongooseDelete, { overrideMethods: "all" });

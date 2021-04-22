@@ -1,114 +1,167 @@
-const mongoose = require("mongoose");
 const validator = require("validator");
-const { review, movie, user } = require("../../models");
+const mongoose = require("mongoose");
+const { user, review, movie, person } = require("../../models");
 
-exports.getOneReview = (req, res, next) => {
-  // Check parameter is valid or not
-  if (!mongoose.Types.ObjectId.isValid(req.params.review_id)) {
-    return res.status(400).json({
-      message: "Review ID is not valid",
+exports.create = async (req, res, next) => {
+  try {
+    let errors = [];
+
+    // Check id_barang is valid or not
+    if (!mongoose.Types.ObjectId.isValid(req.body.movie_id)) {
+      errors.push(
+        "movie_id is not valid and must be 24 character & hexadecimal"
+      );
+    }
+
+    // Check movie_id is valid or not
+    // If the parameters is not valid it will go here
+    if (errors.length > 0) {
+      return res.status(400).json({
+        message: errors.join(", "),
+      });
+    }
+
+    // Find barang and pelanggan
+    let findData = await Promise.all([
+      movie.findOne({ _id: req.body.movie_id }),
+    ]);
+
+    // if movie not found
+    if (!findData[0]) {
+      errors.push("Movie not found");
+    }
+
+    // Check is jumlah numeric?
+    if (!validator.isNumeric(req.body.rating)) {
+      errors.push("Rating must be a number");
+    } else {
+      if (req.body.rating > 5 || req.body.rating < 1) {
+        errors.push("Rating must be a number 1 to 5");
+      }
+    }
+
+    // If errors
+    if (errors.length > 0) {
+      return res.status(400).json({
+        message: errors.join(", "),
+      });
+    }
+
+    // Go to next
+    next();
+  } catch (e) {
+    return res.status(500).json({
+      message: "Internal Server Error",
+      error: e.message,
     });
   }
-  next();
 };
 
-exports.createReview = async (req, res, next) => {
-  if (!mongoose.Types.ObjectId.isValid(req.body.movie_id)) {
-    return res.status(400).json({
-      message: "Movie ID is not valid",
+exports.update = async (req, res, next) => {
+  try {
+    let errors = [];
+
+    // Check parameter id is valid or not
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      errors.push(
+        "id_review is not valid and must be 24 character & hexadecimal"
+      );
+    }
+
+    // Check id_pelanggan is valid or not
+    if (!mongoose.Types.ObjectId.isValid(req.body.movie_id)) {
+      errors.push(
+        "movie_id is not valid and must be 24 character & hexadecimal"
+      );
+    }
+
+    // If the parameters is not valid it will go here
+    if (errors.length > 0) {
+      return res.status(400).json({
+        message: errors.join(", "),
+      });
+    }
+
+    // Find barang, pelanggan and transaksi
+    let findData = await Promise.all([
+      movie.findOne({ _id: req.body.movie_id }),
+      review.findOne({ _id: req.params.id }),
+    ]);
+
+    // if barang not found
+    if (!findData[0]) {
+      errors.push("movie not found");
+    }
+
+    // If pelanggan not found
+    if (!findData[1]) {
+      errors.push("review not found");
+    }
+
+    // Check jumlah is numeric
+    if (!validator.isNumeric(req.body.rating)) {
+      errors.push("Rating must be a number");
+    } else {
+      if (req.body.rating > 5 || req.body.rating < 1) {
+        errors.push("Rating must be a number 1 to 5");
+      }
+    }
+
+    if (errors.length > 0) {
+      return res.status(400).json({
+        message: errors.join(", "),
+      });
+    }
+
+    // Go to next
+    next();
+  } catch (e) {
+    return res.status(500).json({
+      message: "Internal Server Error",
+      error: e.message,
     });
   }
-
-  let errors = [];
-
-  let findData = await Promise.all([
-    movie.findOne({ _id: req.body.movie_id }),
-    review.findOne({
-      movie: req.body.movie_id,
-      user: req.user.id,
-    }),
-  ]);
-
-  if (!findData[0]) {
-    errors.push("Movie not found");
-  }
-
-  if (findData[1]) {
-    errors.push("You already reviewed this movie");
-  }
-
-  if (req.body.rating < 1 || req.body.rating > 5) {
-    errors.push("Rating is not valid");
-  }
-
-  if (errors.length > 0) {
-    return res.status(400).json({
-      message: errors.join(", "),
-    });
-  }
-  // Go to next
-  next();
 };
 
-exports.updateReview = async (req, res, next) => {
-  if (!mongoose.Types.ObjectId.isValid(req.params.review_id)) {
-    return res.status(400).json({
-      message: "Review ID is not valid",
+exports.delete = async (req, res, next) => {
+  try {
+    let errors = [];
+
+    // Check params is valid or not
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      errors.push(
+        "id_review is not valid and must be 24 character & hexadecimal"
+      );
+    }
+
+    // If params error
+    if (errors.length > 0) {
+      return res.status(400).json({
+        message: errors.join(", "),
+      });
+    }
+
+    // Find one Review
+    let data = await review.findOne({ _id: req.params.id });
+
+    // If Review not found
+    if (!data) {
+      errors.push("Review not found");
+    }
+
+    // If error
+    if (errors.length > 0) {
+      return res.status(400).json({
+        message: errors.join(", "),
+      });
+    }
+
+    // Go to next
+    next();
+  } catch (e) {
+    return res.status(500).json({
+      message: "Internal Server Error",
+      error: e.message,
     });
   }
-
-  if (!mongoose.Types.ObjectId.isValid(req.body.movie_id)) {
-    return res.status(400).json({
-      message: "Movie ID is not valid",
-    });
-  }
-
-  let errors = [];
-
-  let findData = await Promise.all([
-    movie.findOne({ _id: req.body.movie_id }),
-    review.findOne({ _id: req.params.review_id, deleted: false }),
-  ]);
-
-  if (!findData[0]) {
-    errors.push("Movie not found");
-  }
-
-  if (!findData[1]) {
-    errors.push("Review not found");
-  }
-
-  if (req.body.rating < 1 || req.body.rating > 5) {
-    errors.push("Rating is not valid");
-  }
-
-  if (errors.length > 0) {
-    return res.status(400).json({
-      message: errors.join(", "),
-    });
-  }
-
-  next();
-};
-
-exports.deleteReview = async (req, res, next) => {
-  if (!mongoose.Types.ObjectId.isValid(req.params.review_id)) {
-    return res.status(400).json({
-      message: "Review ID is not valid",
-    });
-  }
-
-  let findReview = await review.findOne({
-    _id: req.params.review_id,
-    deleted: false,
-  });
-
-  if (!findReview) {
-    return res.status(400).json({
-      message: "Review not found",
-    });
-  }
-
-  // Go to next
-  next();
 };

@@ -1,21 +1,13 @@
 const express = require("express");
-
-// Import validator
+const router = express.Router();
+// Import validator, auth, controller
 const movieValidator = require("../middlewares/validators/movieValidator");
-
-// Import controller
 const movieController = require("../controllers/movieController");
-
-// Import upload
 const movieUpload = require("../middlewares/uploads/uploadFlow");
-
-//Import auth
 const auth = require("../middlewares/auth");
 
-// Make router
-const router = express.Router();
-
-router.post("/", auth.user, movieUpload.uploadPoster, movieController.create);
+// Movie End Point
+router.post("/", auth.admin, movieUpload.uploadPoster, movieController.create);
 
 router.delete(
   "/:id",
@@ -44,12 +36,16 @@ router.get("/:page", movieValidator.getAllValidator, movieController.getAll);
 router.put(
   "/update/:id",
   auth.admin,
+  movieValidator.cekParamsId,
+  movieValidator.updateValidator,
   movieUpload.uploadPoster,
   movieController.updateMovie
 );
 router.put(
   "/updatecast/:id",
   auth.admin,
+  movieValidator.cekParamsId,
+  movieValidator.updateValidator,
   movieUpload.uploadPoster,
   movieController.updateMovieCast
 );

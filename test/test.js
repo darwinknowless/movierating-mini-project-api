@@ -5,8 +5,8 @@ const { review } = require("../models");
 
 let review_id;
 
-const movie_id = "607fea611d548316fef954fa";
-const user_id = "607b2a4c6f495c4a8c0aff2f";
+const movieId = "607fea611d548316fef954fa";
+const userId = "607b2a4c6f495c4a8c0aff2f";
 
 const body = {
   user: {
@@ -33,7 +33,7 @@ describe("Review Test", () => {
       const res = await request(app)
         .post("/review/create")
         .send({
-          movie_id: "1",
+          movieId: "1",
           rating: 6,
           review: "Amazing movie",
         })
@@ -52,7 +52,7 @@ describe("Review Test", () => {
       const res = await request(app)
         .post("/review/create")
         .send({
-          movie_id: movie_id,
+          movieId: movieId,
           rating: 6,
           review: "Amazing movie",
         })
@@ -71,7 +71,7 @@ describe("Review Test", () => {
       const res = await request(app)
         .post("/review/create")
         .send({
-          movie_id: movie_id,
+          movieId: movieId,
           rating: 4,
           review: "Amazing movie",
         })
@@ -91,7 +91,7 @@ describe("Review Test", () => {
       const res = await request(app)
         .post("/review/create")
         .send({
-          movie_id: movie_id,
+          movieId: movieId,
           rating: 5,
           review: "Amazing movie WOW",
         })

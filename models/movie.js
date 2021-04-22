@@ -44,13 +44,12 @@ const MovieSchema = new mongoose.Schema(
       require: true,
     },
 
-    casts: [
+    casts: 
       {
-        type: mongoose.Schema.ObjectId,
+        type: [mongoose.Schema.ObjectId],
         ref: "cast",
       },
-    ],
-
+    
     //TODO input your schema header column here
   },
   {
@@ -68,7 +67,15 @@ function getPoster(poster) {
   return `/images/moviePoster/${poster}`;
 }
 
+// Reverse populate with virtuals
+MovieSchema.virtual("reviews", {
+  ref: "review",
+  localField: "_id",
+  foreignField: "movie",
+  justOne: false,
+}); 
+
 // Enable soft delete
 MovieSchema.plugin(mongooseDelete, { overrideMethods: "all" });
 
-module.exports = mongoose.model("Movie", MovieSchema); //Export model
+module.exports = mongoose.model("movie", MovieSchema); //Export model

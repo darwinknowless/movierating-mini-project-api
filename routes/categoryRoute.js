@@ -1,10 +1,8 @@
 const express = require("express"); // Import express
 const router = express.Router(); // Make a router
 
-// Import validator
+// Import controlller, validator
 const categoryValidator = require("../middlewares/validators/categoryValidator");
-
-// Import controller
 const categoryController = require("../controllers/categoryController");
 
 // Make router

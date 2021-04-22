@@ -32,7 +32,7 @@ class CastController {
   async getAll(req, res) {
     try {
       // Find all data
-      let data = await cast.find();
+      let data = await cast.find().populate("filmography");
 
       // If no data
       if (data.length === 0) {
