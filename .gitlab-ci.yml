@@ -44,10 +44,10 @@ deploy:
     - cd $PROJECT_DIR
     - echo "MONGO_URI"=$ENVIRONMENT_PRODUCTION_MONGO_URI > .env.production
     - echo "JWT_SECRET"=$ENVIRONMENT_PRODUCTION_JWT_SECRET >> .env.production
-    - npm i
+    - yarn install
     # Restart NodeJS service
-    - npm run stop
-    - npm run start
+    - yarn run stop
+    - yarn run start
   only:
     # Branch on Gitlab (u can change this with your branch)
     - newdarwin
