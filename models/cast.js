@@ -46,7 +46,7 @@ function getImage(image) {
     return null;
   }
 
-  return `/images/${image}`;
+  return `/images/castPhoto/${image}`;
 }
 
 module.exports = mongoose.model("cast", CastSchema); // Export cast model
