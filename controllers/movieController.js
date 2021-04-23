@@ -76,7 +76,7 @@ class MovieController {
 
       const dataMovie = await movie
         .find({})
-        .select("title releaseYear ratingAvg poster")
+        .select("poster title genre")
         .sort({ createdAt: -1 })
         .skip((page - 1) * limit)
         .limit(limit);
