@@ -4,27 +4,33 @@ class ReviewController {
   async create(req, res) {
     try {
       req.body.user = req.user.id;
-      console.log(req.body)
+      console.log(req.body);
       // Create data
       let data = await review.create(req.body);
-      console.log(req.body)
-
-      // let newreview = await movie.updateOne(
-      //   { _id: req.body.movieId },
-      //   { $push: { reviews: data._id } },
-      //   { new: true }
-      // );
+      console.log(req.body);
 
       return res.status(201).json({
         message: "Success",
         data,
       });
     } catch (e) {
-      console.log(e);
-      return res.status(500).json({
-        message: "Internal Server Error",
-        error: e.message,
-      });
+      if (
+        e.code == 11000 &&
+        e.keyPattern.movie_id == 1 &&
+        e.keyPattern.user_id == 1
+      ) {
+        //console.log(e);
+        return res.status(400).json({
+          message: "Error",
+          error: "User has been reviewed this movie",
+        });
+      } else {
+        console.log(e);
+        return res.status(500).json({
+          message: "Internal Server Error",
+          error: e.message,
+        });
+      }
     }
   }
 
@@ -59,14 +65,6 @@ class ReviewController {
   async update(req, res) {
     try {
       req.body.userId = req.user.id;
-      const singleReview = await review.findById(req.params.id);
-
-      if (singleReview.userId.toString() !== req.user.id && req.user.id) {
-        return res.status(404).json({
-          message: `you are not the owner of this review`,
-        });
-      }
-      // Update data
       let data = await review.findOneAndUpdate(
         {
           _id: req.params.id,
@@ -76,37 +74,39 @@ class ReviewController {
           new: true,
         }
       );
-
       // If success
       return res.status(201).json({
         message: "Success",
         data,
       });
     } catch (e) {
-      console.log(e);
-      return res.status(500).json({
-        message: "Internal Server Error",
-        error: e.message,
-      });
+      if (
+        e.code == 11000 &&
+        e.keyPattern.movie_id == 1 &&
+        e.keyPattern.user_id == 1
+      ) {
+        console.log(e);
+        return res.status(400).json({
+          message: "Error",
+          error: "User has been reviewed this movie",
+        });
+      } else {
+        console.log(e);
+        return res.status(500).json({
+          message: "Internal Server Error",
+          error: e.message,
+        });
+      }
     }
   }
 
   async delete(req, res) {
     try {
-      req.body.userId = req.user.id;
-      const singleReview = await review.findById(req.params.id);
-
-      if (singleReview.userId.toString() !== req.user.id && req.user.id) {
-        return res.status(404).json({
-          message: `you are not the owner of this review`,
-        });
-      }
-      // delete data depends on req.params.id
-      let data = await review.remove();
+      await review.delete();
 
       // If success
       return res.status(200).json({
-        message: "Success to delete transaksi",
+        message: "Success to delete review",
       });
     } catch (e) {
       // If failed
