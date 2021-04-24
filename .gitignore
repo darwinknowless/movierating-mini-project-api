@@ -4,9 +4,6 @@
 .env.test
 node_modules/
 config.json
-public/images/castPhoto/*
-public/images/moviePoster/*
-public/images/userPhoto/*
 coverage/
 access.log
 SSH.md
