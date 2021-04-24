@@ -126,7 +126,7 @@ exports.update = async (req, res, next) => {
     req.body.image = file.name;
 
     //Upload image to /public/image
-    file.mv(`./public/images/userPhoto${file.name}`, async (err) => {
+    file.mv(`./public/images/userPhoto/${file.name}`, async (err) => {
       if (err) {
         return res.status(500).json({
           message: "Internal Server Error",

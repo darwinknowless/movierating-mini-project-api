@@ -76,7 +76,7 @@ class MovieController {
 
       const dataMovie = await movie
         .find({})
-        .select("title releaseYear ratingAvg poster")
+        .select("poster title genre")
         .sort({ createdAt: -1 })
         .skip((page - 1) * limit)
         .limit(limit);
@@ -111,17 +111,19 @@ class MovieController {
       const page = parseInt(req.params.page) || 1; //for next page pass 1 here
       const limit = 10;
       let total = await movie
-        .find({ category: req.query.category })
+        .find({ category: req.body.category })
         .countDocuments();
 
       const skip = (page - 1) * limit;
 
       const dataMoviebyCategory = await movie
         .find({
-          category: req.params.category,
+          category: req.body.category,
         })
         .skip(skip)
         .limit(limit);
+
+        console.log({ category: req.body.category })
 
       if (dataMoviebyCategory.length === 0) {
         return res.status(404).json({
@@ -173,13 +175,65 @@ class MovieController {
     }
   }
 
+  async getMovieAllReviews(req, res) {
+    try {
+      const dataOne = await movie
+        .findOne({ _id: req.params.id })
+        .select("title ratingAvg synopsis urlTrailer")
+        .populate("reviews")
+        //.populate("categorys")
+        //.populate("casts");
+
+      if (dataOne === null) {
+        return res.status(404).json({
+          message: "Data Movie Not Found",
+        });
+      }
+
+      return res.status(200).json({
+        message: "success",
+        data: dataOne,
+      });
+    } catch (e) {
+      console.error(e);
+      return res.status(500).json({
+        message: "Internal Server Error",
+        error: e,
+      });
+    }
+  }
+
+  async getAllCastInMovie(req, res) {
+    try {
+      const dataOne = await movie
+        .findOne({ _id: req.params.id })
+        .select("title ratingAvg synopsis urlTrailer")
+        .populate("casts");
+       
+
+      if (dataOne === null) {
+        return res.status(404).json({
+          message: "Data Movie Not Found",
+        });
+      }
+
+      return res.status(200).json({
+        message: "success",
+        data: dataOne,
+      });
+    } catch (e) {
+      console.error(e);
+      return res.status(500).json({
+        message: "Internal Server Error",
+        error: e,
+      });
+    }
+  }
+
   async getOne(req, res) {
     try {
       const dataOne = await movie
         .findOne({ _id: req.params.id })
-        .populate("reviews")
-        //.populate("categorys")
-        .populate("casts");
 
       if (dataOne === null) {
         return res.status(404).json({

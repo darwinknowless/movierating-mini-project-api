@@ -38,7 +38,7 @@ const MovieSchema = new mongoose.Schema(
       default: 0,
       required: false, //change soon
     },
-    category: {
+    genre: {
       type: [String],
       default: ["Unknow"],
       require: true,
