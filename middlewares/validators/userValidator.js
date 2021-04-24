@@ -47,7 +47,7 @@ exports.signup = async (req, res, next) => {
     req.body.image = file.name;
 
     //Upload image to /public/image
-    file.mv(`./public/images/userPhoto/${file.name}`, async (err) => {
+    file.mv(`./public/images/${file.name}`, async (err) => {
       if (err) {
         return res.status(500).json({
           message: "Internal Server Error",
@@ -59,6 +59,7 @@ exports.signup = async (req, res, next) => {
 
   next();
 };
+
 
 exports.signin = async (req, res, next) => {
   let errors = [];
@@ -126,7 +127,7 @@ exports.update = async (req, res, next) => {
     req.body.image = file.name;
 
     //Upload image to /public/image
-    file.mv(`./public/images/userPhoto/${file.name}`, async (err) => {
+    file.mv(`./public/images/${file.name}`, async (err) => {
       if (err) {
         return res.status(500).json({
           message: "Internal Server Error",
@@ -138,6 +139,7 @@ exports.update = async (req, res, next) => {
 
   next();
 };
+
 
 // exports.getOne = (req, res, next) => {
 //   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {

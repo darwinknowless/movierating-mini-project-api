@@ -31,7 +31,7 @@ const MovieSchema = new mongoose.Schema(
       default: null,
       required: false,
       // Getter
-      get: getPoster,
+      get: getImage,
     },
     ratingAvg: {
       type: Number,
@@ -62,10 +62,11 @@ const MovieSchema = new mongoose.Schema(
   }
 );
 
-// Image getter
-function getPoster(poster) {
-  return `/images/moviePoster/${poster}`;
+//getter function for barang
+function getImage(poster) {
+  return `/images/${poster}`;
 }
+
 
 // Reverse populate with virtuals
 MovieSchema.virtual("reviews", {

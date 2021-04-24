@@ -55,8 +55,9 @@ const UserSchema = new mongoose.Schema(
 
 //getter function for barang
 function getImage(image) {
-  return `/images/userPhoto/${image}`;
+  return `/images/${image}`;
 }
+
 
 //encrypting the password
 function encryptPassword(password) {

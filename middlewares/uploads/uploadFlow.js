@@ -28,7 +28,7 @@ exports.uploadPoster = (req, res, next) => {
       req.body.poster = file.name;
 
       // Upload  poster to /public/images
-      file.mv(`./public/images/moviePoster/${file.name}`, async (err) => {
+      file.mv(`./public/images/${file.name}`, async (err) => {
         if (err) {
           console.error(err);
 
@@ -69,7 +69,7 @@ exports.uploadPhoto = async (req, res, next) => {
       req.body.photo = file.name;
 
       //Upload image to /public/image
-      file.mv(`./public/images/userPhoto/${file.name}`, async (err) => {
+      file.mv(`./public/images/${file.name}`, async (err) => {
         if (err) {
           return res.status(500).json({
             message: "Internal Server Error tu",
@@ -109,7 +109,7 @@ exports.uploadCastPhoto = async (req, res, next) => {
       req.body.image = file.name;
 
       //Upload image to /public/image
-      file.mv(`./public/images/castPhoto/${file.name}`, async (err) => {
+      file.mv(`./public/images/${file.name}`, async (err) => {
         if (err) {
           return res.status(500).json({
             message: "Internal Server Error",
