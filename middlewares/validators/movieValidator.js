@@ -48,7 +48,7 @@ exports.getAllValidator = async (req, res, next) => {
 exports.categoryValidator = async (req, res, next) => {
   try {
     if (req.params.page) {
-      let total = await movie.find({ category: req.body.genre });
+      let total = await movie.find({ genre: req.body.genre });
       total = Math.ceil(total.length / 10);
       if (req.params.page > total) {
         return res.status(400).json({
