@@ -111,19 +111,19 @@ class MovieController {
       const page = parseInt(req.params.page) || 1; //for next page pass 1 here
       const limit = 10;
       let total = await movie
-        .find({ category: req.body.category })
+        .find({ category: req.body.genre })
         .countDocuments();
 
       const skip = (page - 1) * limit;
 
       const dataMoviebyCategory = await movie
         .find({
-          category: req.body.category,
+          category: req.body.genre,
         })
         .skip(skip)
         .limit(limit);
 
-        console.log({ category: req.body.category })
+        console.log({ category: req.body.genre })
 
       if (dataMoviebyCategory.length === 0) {
         return res.status(404).json({

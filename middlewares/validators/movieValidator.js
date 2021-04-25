@@ -15,16 +15,16 @@ exports.cekParamsId = async (req, res, next) => {
   next();
 };
 
-exports.cekParamsCategory = async (req, res, next) => {
-  // Check params is valid or not
-  if (!mongoose.Types.ObjectId.isValid(req.params.category)) {
-    return res.status(400).json({
-      message: "Id request is not valid",
-    });
-  }
-  // Go to next
-  next();
-};
+// exports.cekParamsCategory = async (req, res, next) => {
+//   // Check params is valid or not
+//   if (!mongoose.Types.ObjectId.isValid(req.params.category)) {
+//     return res.status(400).json({
+//       message: "Id request is not valid",
+//     });
+//   }
+//   // Go to next
+//   next();
+// };
 
 exports.getAllValidator = async (req, res, next) => {
   try {
@@ -48,7 +48,7 @@ exports.getAllValidator = async (req, res, next) => {
 exports.categoryValidator = async (req, res, next) => {
   try {
     if (req.params.page) {
-      let total = await movie.find({ category: req.body.category });
+      let total = await movie.find({ category: req.body.genre });
       total = Math.ceil(total.length / 10);
       if (req.params.page > total) {
         return res.status(400).json({
