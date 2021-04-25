@@ -103,7 +103,7 @@ exports.update = async (req, res, next) => {
         if (!validator.isNumeric(req.body.rating)) {
             errors.push("Rating must be a number");
         } else {
-          if (req.body.rating > 5 || req.body.rating < 1 ) {
+          if (req.body.rating > 10 || req.body.rating < 1 ) {
             errors.push("Rating must be a number 1 to 5");
           }
         }
