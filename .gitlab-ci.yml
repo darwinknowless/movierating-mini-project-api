@@ -27,7 +27,7 @@ test:
   # Defines the names of branches and tags the job runs for
   only:
     # Branch on Gitlab (u can change this with your branch)
-    - newdarwin
+    - development
 
 # Deploy job
 deploy:
@@ -50,4 +50,4 @@ deploy:
     - yarn run start
   only:
     # Branch on Gitlab (u can change this with your branch)
-    - newdarwin
+    - development 
