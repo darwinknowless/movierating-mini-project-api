@@ -26,11 +26,15 @@ class MovieController {
 
   async updateMovieCast(req, res) {
     try {
-      const updatecast = await movie.updateMany(
+      const updatecast = await movie.updateOne(
         { _id: req.params.id },
         { $push: { casts: req.body.casts } },
         { new: true }
       );
+      let newcast = await cast.updateMany(
+        { _id: req.body.casts },
+        { $push: { filmography: data._id } },
+        { new: true }
 
       return res.status(200).json({
         message: "Success Update",
