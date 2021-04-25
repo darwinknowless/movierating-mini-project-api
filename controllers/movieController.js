@@ -35,7 +35,7 @@ class MovieController {
         { _id: req.body.casts },
         { $push: { filmography: data._id } },
         { new: true }
-
+      );
       return res.status(200).json({
         message: "Success Update",
         data: updatecast,
@@ -53,7 +53,7 @@ class MovieController {
       const update = await movie.updateOne({ _id: req.params.id }, req.body, {
         new: true,
       });
-      console.log(update)
+      console.log(update);
 
       if (update === null) {
         return res.status(404).json({
@@ -114,9 +114,7 @@ class MovieController {
     try {
       const page = parseInt(req.params.page) || 1; //for next page pass 1 here
       const limit = 10;
-      let total = await movie
-        .find({ genre: req.body.genre })
-        .countDocuments();
+      let total = await movie.find({ genre: req.body.genre }).countDocuments();
 
       const skip = (page - 1) * limit;
 
@@ -127,7 +125,7 @@ class MovieController {
         .skip(skip)
         .limit(limit);
 
-        console.log({ genre: req.body.genre })
+      console.log({ genre: req.body.genre });
 
       if (dataMoviebyCategory.length === 0) {
         return res.status(404).json({
@@ -184,9 +182,9 @@ class MovieController {
       const dataOne = await movie
         .findOne({ _id: req.params.id })
         .select("title ratingAvg synopsis urlTrailer")
-        .populate("reviews")
-        //.populate("categorys")
-        //.populate("casts");
+        .populate("reviews");
+      //.populate("categorys")
+      //.populate("casts");
 
       if (dataOne === null) {
         return res.status(404).json({
@@ -213,7 +211,6 @@ class MovieController {
         .findOne({ _id: req.params.id })
         .select("title ratingAvg synopsis urlTrailer")
         .populate("casts");
-       
 
       if (dataOne === null) {
         return res.status(404).json({
@@ -236,8 +233,7 @@ class MovieController {
 
   async getOne(req, res) {
     try {
-      const dataOne = await movie
-        .findOne({ _id: req.params.id })
+      const dataOne = await movie.findOne({ _id: req.params.id });
 
       if (dataOne === null) {
         return res.status(404).json({
