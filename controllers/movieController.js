@@ -76,7 +76,7 @@ class MovieController {
   async getAll(req, res) {
     try {
       const page = parseInt(req.params.page) || 1; //for next page pass 1 here
-      const limit = parseInt(req.query.limit) || 10;
+      const limit = parseInt(req.query.limit) || 100;
       let totalItems = await movie.find({}).countDocuments();
 
       const dataMovie = await movie

@@ -4,7 +4,7 @@
   "description": "Project Team C : Movie Review",
   "main": "index.js",
   "scripts": {
-    "test": "NODE_ENV=test jest --testTimeout=10000 --coverage --forceExit",
+    "test": "NODE_ENV=test jest --testTimeout=20000 --coverage --forceExit",
     "dev": "NODE_ENV=development nodemon index.js",
     "stop": "NODE_ENV=production forever stop index.js || true",
     "start": "NODE_ENV=production forever start index.js"
