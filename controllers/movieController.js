@@ -33,14 +33,15 @@ class MovieController {
       );
       let newcast = await cast.updateMany(
         { _id: req.body.casts },
-        { $push: { filmography: data._id } },
+        { $push: { filmography: req.params.id } },
         { new: true }
       );
       return res.status(200).json({
         message: "Success Update",
-        data: updatecast,
+        updatecast,
       });
     } catch (error) {
+      console.log(error);
       return res.status(500).json({
         message: "Internal Server Error",
         error: error.message,
